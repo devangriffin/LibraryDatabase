@@ -14,6 +14,8 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Data.SqlClient;
 using System.Net;
+using LibraryDatabase.Objects;
+using static System.Reflection.Metadata.BlobBuilder;
 
 namespace LibraryDatabase
 {
@@ -27,7 +29,7 @@ namespace LibraryDatabase
         /// </summary>
         private string connectionString = System.Configuration.ConfigurationManager.ConnectionStrings[""].ConnectionString;
         /*
-         * When we have a server u[ and running this is for security and would be used instead for connectionString
+         * When we have a server up and running this is for security and would be used instead for connectionString
         "Data Source=serverName;" +
         "Initial Catalog=LibraryDB;" +
         "User id=UserName;" + 
@@ -176,5 +178,73 @@ namespace LibraryDatabase
             }
         }
 
+
+        /// <summary>
+        /// gets a list of books from the database
+        /// </summary>
+        /// <returns> a list of all book titles in the library</returns>
+        private List<string> GetBooks()
+        {
+            List<string> books = new List<string>();
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                using (SqlCommand command = connection.CreateCommand())
+                {
+                    command.CommandText = "SELECT BookTitleID, Title FROM [LibraryDB].[BookTitle]";
+                    connection.Open();
+                    SqlDataReader reader = command.ExecuteReader();
+                    try
+                    {
+                        while (reader.Read())
+                        {
+                            string form = String.Format("{0}", reader["Title"]);
+                            books.Add(form);
+
+                        }
+                    }
+                    finally
+                    {
+                        reader.Close();
+                    }
+
+                    connection.Close();
+                }
+            }
+            return books;
+        }
+
+        /// <summary>
+        /// gets a list of patrons from the database
+        /// </summary>
+        /// <returns>a list of patrons</returns>
+        private List<string> GetPatrons()
+        {
+            List<string> patrons = new List<string>();
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                using (SqlCommand command = connection.CreateCommand())
+                {
+                    command.CommandText = "SELECT PatronID, [FullName] FROM [LibraryDB].[Patron]";
+                    connection.Open();
+                    SqlDataReader reader = command.ExecuteReader();
+                    try
+                    {
+                        while (reader.Read())
+                        {
+                            string form = String.Format("{0}", reader["[FullName]"]);
+                            patrons.Add(form);
+
+                        }
+                    }
+                    finally
+                    {
+                        reader.Close();
+                    }
+
+                    connection.Close();
+                }
+            }
+            return patrons;
+        }
     }
 }
