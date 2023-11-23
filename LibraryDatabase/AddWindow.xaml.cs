@@ -10,27 +10,18 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
 using System.Windows.Shapes;
 
 namespace LibraryDatabase
 {
     /// <summary>
-    /// Interaction logic for MainWindow.xaml
+    /// Interaction logic for AddWindow.xaml
     /// </summary>
-    public partial class MainWindow : Window
+    public partial class AddWindow : Window
     {
-        AddWindow AddBookWindow;
-        public MainWindow()
+        public AddWindow()
         {
             InitializeComponent();
-
-            AddBookWindow = new AddWindow();
-        }
-
-        private void AddButton_Click(object sender, RoutedEventArgs e)
-        {
-            AddBookWindow.Show();
         }
     }
 }
