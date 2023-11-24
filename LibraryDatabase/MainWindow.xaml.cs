@@ -20,16 +20,14 @@ namespace LibraryDatabase
     /// </summary>
     public partial class MainWindow : Window
     {
-        AddWindow AddBookWindow;
         public MainWindow()
         {
             InitializeComponent();
-
-            AddBookWindow = new AddWindow();
         }
 
         private void AddButton_Click(object sender, RoutedEventArgs e)
         {
+            AddWindow AddBookWindow = new AddWindow();
             AddBookWindow.Show();
         }
     }
