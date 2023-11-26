@@ -15,7 +15,9 @@
         
         <TextBlock Text="Library Database" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="32"/>
         <DataGrid Margin="10" Grid.Row="1"/>
+        
         <Button x:Name="AddButton" Content="Add Book" HorizontalAlignment="Left" Width="100" Height="32" Grid.Row="2" Margin="20" Click="AddButton_Click"/>
         <Button x:Name="CheckoutButton" Content="Checkout Book" HorizontalAlignment="Right" Width="100" Height="32" Grid.Row="2" Margin="20"/>
+        <Button x:Name="AddPatronButton" Content="Add Patron" HorizontalAlignment="Left" Width="100" Height="32" Grid.Row="2" Margin="160, 0, 0, 0" Click="AddPatronButton_Click"/>
     </Grid>
 </Window>

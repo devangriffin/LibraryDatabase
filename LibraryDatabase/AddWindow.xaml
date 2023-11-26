@@ -41,15 +41,20 @@
         <TextBox x:Name="AuthorTextBox" Height="20" Width="240" Grid.Row="2" Grid.Column="1" HorizontalAlignment="Left"/>
         <TextBox x:Name="ISBNTextBox" Height="20" Width="240" Grid.Row="3" Grid.Column="1" HorizontalAlignment="Left"/>
         <TextBox x:Name="PublisherTextBox" Height="20" Width="240" Grid.Row="4" Grid.Column="1" HorizontalAlignment="Left"/>
-        <TextBox x:Name="PublishDateTextBox" Height="20" Width="240" Grid.Row="5" Grid.Column="1" HorizontalAlignment="Left"/>
-        
+
+        <!-- Date Picker -->
+        <DatePicker x:Name="PublishDateBox" Height="20" Width="240" Grid.Row="5" Grid.Column="1" HorizontalAlignment="Left" FontSize="10"/>
+
         <!-- Combo Boxes -->
-        <ComboBox x:Name="AudienceListBox" Height="20" Width="240" Grid.Row="6" Grid.Column="1" HorizontalAlignment="Left" d:ItemsSource="{d:SampleData ItemCount=5}"/>
-        <ComboBox x:Name="GenreTextBox" Height="20" Width="240" Grid.Row="7" Grid.Column="1" HorizontalAlignment="Left"/>
+        <ComboBox x:Name="AudienceComboBox" Height="20" Width="240" Grid.Row="6" Grid.Column="1" HorizontalAlignment="Left"/>
+        <ComboBox x:Name="GenreComboBox" Height="20" Width="240" Grid.Row="7" Grid.Column="1" HorizontalAlignment="Left"/>
         
         <!-- Buttons -->
         <Button x:Name="CancelButton" Content="Cancel" Grid.Row="9" Margin="5" Click="CancelButton_Click"/>
-        <Button x:Name="AddButton" Content="Add" Grid.Row="9" Grid.Column="1" Margin="5"/>
+        <Button x:Name="AddButton" Content="Add" Grid.Row="9" Grid.Column="1" Margin="5" Click="AddButton_Click"/>
         
+        <!-- Error Handling -->
+        <TextBlock x:Name="ErrorTextBlock" Text="Invalid Input" Visibility="Hidden" VerticalAlignment="Center" Grid.Row="8" Grid.Column="1" Grid.ColumnSpan="2" Foreground="Red"/>
+
     </Grid>
 </Window>
