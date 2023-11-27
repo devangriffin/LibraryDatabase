@@ -22,11 +22,11 @@ namespace LibraryDatabase
     /// </summary>
     public partial class AddWindow : Window
     {
-        MainWindow ParentWindow;
+        Window ParentWindow;
 
-        public AddWindow(MainWindow mainWindow)
+        public AddWindow(Window parentWindow)
         {
-            ParentWindow = mainWindow;
+            ParentWindow = parentWindow;
 
             InitializeComponent();
 
@@ -38,7 +38,7 @@ namespace LibraryDatabase
 
         private void CancelButton_Click(object sender, RoutedEventArgs e)
         {
-            ParentWindow.BookAdded();
+            ParentWindow.IsEnabled = true;
             Close();
         }
 
@@ -57,7 +57,7 @@ namespace LibraryDatabase
             {
                 Book = new BookTitle(0, (int)AudienceComboBox.SelectedItem, (int)GenreComboBox.SelectedItem, Convert.ToInt32(ISBNTextBox.Text), TitleTextBox.Text, PublisherTextBox.Text, DateOnly.FromDateTime(PublishDateBox.DisplayDate));
             }
-            catch (FormatException)
+            catch // FormatException?
             {
                 ErrorTextBlock.Visibility = Visibility.Visible;
                 return;
@@ -72,14 +72,7 @@ namespace LibraryDatabase
             IsEnabled = false;
         }
 
-        public void Confirm(BookTitle book)
-        {
-            ParentWindow.IsEnabled = true;
-            Close();
-        }
-
-        public void Cancel(BookTitle book) { IsEnabled = true; }
-
-        private void OnClosing(object sender, EventArgs e) { ParentWindow.BookAdded(); }
+        
+        private void OnClosing(object sender, EventArgs e) { ParentWindow.IsEnabled = true; }
     }
 }

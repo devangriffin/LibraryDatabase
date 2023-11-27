@@ -16,5 +16,19 @@ namespace LibraryDatabase.Objects
         public string Address { get; }
         public DateOnly BirthDate { get; }
         public bool KidReader { get; }
+
+        public Patron(int cardNum, string name, string phoneNum, string add, DateOnly birthDate, bool kid)
+        {
+            CardNumber = cardNum;
+            Name = name;
+            PhoneNumber = phoneNum;
+            Address = add;
+            BirthDate = birthDate;
+            KidReader = kid;
+
+            // Temp Numbers
+            PatronID = -1;
+            LoanID = -1;
+        }
     }
 }

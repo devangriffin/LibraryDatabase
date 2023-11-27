@@ -22,12 +22,12 @@ namespace LibraryDatabase
     public partial class BookInfoWindow : Window
     {
         BookTitle Book;
-        AddWindow ParentWindow;
+        Window ParentWindow;
 
-        public BookInfoWindow(BookTitle book, AddWindow addWindow)
+        public BookInfoWindow(BookTitle book, Window parentWindow)
         {
             Book = book;
-            ParentWindow = addWindow;
+            ParentWindow = parentWindow;
 
             InitializeComponent();
             InitializeTextBlocks();
@@ -48,13 +48,13 @@ namespace LibraryDatabase
 
         private void CancelButton_Click(object sender, RoutedEventArgs e)
         {
-            ParentWindow.Cancel(Book);
+            ParentWindow.IsEnabled = true;
             Close();
         }
 
         private void ConfirmButton_Click(object sender, RoutedEventArgs e)
         {
-            ParentWindow.Confirm(Book);
+            ParentWindow.Close();
             Close();
         }
 

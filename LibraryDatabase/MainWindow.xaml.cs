@@ -35,12 +35,10 @@ namespace LibraryDatabase
 
         private void AddPatronButton_Click(object sender, RoutedEventArgs e)
         {
-            PatronWindow NewPatronWindow = new PatronWindow();
+            PatronWindow NewPatronWindow = new PatronWindow(this);
             NewPatronWindow.Show();
-        }
 
-        public void BookAdded() { IsEnabled = true; }
-
-        
+            IsEnabled = false;
+        }        
     }
 }

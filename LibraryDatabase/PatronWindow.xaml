@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:LibraryDatabase"
         mc:Ignorable="d"
-        Title="PatronWindow" Height="300" Width="400" ResizeMode="NoResize">
+        Title="PatronWindow" Height="320" Width="400" ResizeMode="NoResize">
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition/>
@@ -13,6 +13,8 @@
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition Height="1.5*"/>
+            <RowDefinition/>
+            <RowDefinition/>
             <RowDefinition/>
             <RowDefinition/>
             <RowDefinition/>
@@ -33,8 +35,9 @@
         <TextBlock Text="Street Address: " Grid.Row="4" HorizontalAlignment="Right" VerticalAlignment="Center"/>
         <TextBlock Text="City: " Grid.Row="5" HorizontalAlignment="Right" VerticalAlignment="Center"/>
         <TextBlock Text="State: " Grid.Row="6" HorizontalAlignment="Right" VerticalAlignment="Center"/>
-        <TextBlock Text="Birth Date: " Grid.Row="7" HorizontalAlignment="Right" VerticalAlignment="Center"/>
-        <TextBlock Text="Kid Reader: " Grid.Row="8" HorizontalAlignment="Right" VerticalAlignment="Center"/>
+        <TextBlock Text="Zip Code: " Grid.Row="7" HorizontalAlignment="Right" VerticalAlignment="Center"/>
+        <TextBlock Text="Birth Date: " Grid.Row="8" HorizontalAlignment="Right" VerticalAlignment="Center"/>
+        <TextBlock Text="Kid Reader: " Grid.Row="9" HorizontalAlignment="Right" VerticalAlignment="Center"/>
         
         <!-- Right Column Text Boxes -->
         <TextBox x:Name="NameTextBox" Grid.Column="1" Grid.Row="1" Height="20" Width="240" HorizontalAlignment="Left"/>
@@ -43,7 +46,16 @@
         <TextBox x:Name="AddressTextBox" Grid.Column="1" Grid.Row="4" Height="20" Width="240" HorizontalAlignment="Left"/>
         <TextBox x:Name="CityTextBox" Grid.Column="1" Grid.Row="5" Height="20" Width="240" HorizontalAlignment="Left"/>
         <TextBox x:Name="StateTextBox" Grid.Column="1" Grid.Row="6" Height="20" Width="240" HorizontalAlignment="Left"/>
-        <TextBox x:Name="BirthDateTextBox" Grid.Column="1" Grid.Row="7" Height="20" Width="240" HorizontalAlignment="Left"/>
-        <CheckBox x:Name="KidReaderCheckBox" Grid.Column="1" Grid.Row="8" VerticalAlignment="Center"/>
+        <TextBox x:Name="ZipCodeTextBox" Grid.Column="1" Grid.Row="7" Height="20" Width="240" HorizontalAlignment="Left"/>
+
+        <DatePicker x:Name="BirthDateTextBox" Grid.Column="1" Grid.Row="8" Height="20" Width="240" HorizontalAlignment="Left"/>
+        
+        <CheckBox x:Name="KidReaderCheckBox" Grid.Column="1" Grid.Row="9" VerticalAlignment="Center"/>
+
+        <!-- Buttons -->
+        <Button x:Name="AddButton" Content="Add" Grid.Column="1" Grid.Row="11" Margin="5" Click="AddButton_Click"/>
+        <Button x:Name="CancelButton" Content="Cancel" Grid.Row="11" Margin="5" Click="CancelButton_Click"/>
+
+        <TextBlock x:Name="ErrorBlock" Text="Invalid Input" Grid.Column="1" Grid.Row="10" Foreground="Red" Visibility="Hidden"/>
     </Grid>
 </Window>
