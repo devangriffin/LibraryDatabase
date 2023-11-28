@@ -12,6 +12,12 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using System.Data.SqlClient;
+using System.Net;
+using LibraryDatabase.Objects;
+using static System.Reflection.Metadata.BlobBuilder;
+using System.Security.Policy;
+using System.Xml.Linq;
 
 namespace LibraryDatabase
 {
@@ -20,11 +26,26 @@ namespace LibraryDatabase
     /// </summary>
     public partial class MainWindow : Window
     {
+        /// <summary>
+        /// used anytime we need to connect to the database and interface with any of the information
+        /// </summary>
+        private string connectionString = System.Configuration.ConfigurationManager.ConnectionStrings[""].ConnectionString;
+        /*
+         * When we have a server up and running this is for security and would be used instead for connectionString
+        "Data Source=serverName;" +
+        "Initial Catalog=LibraryDB;" +
+        "User id=UserName;" + 
+        "Password=Secret;";
+        */
+
+
+
+
         public MainWindow()
         {
             InitializeComponent();
         }
-
+        
         private void AddButton_Click(object sender, RoutedEventArgs e)
         {
             AddWindow AddBookWindow = new AddWindow(this);
@@ -39,6 +60,471 @@ namespace LibraryDatabase
             NewPatronWindow.Show();
 
             IsEnabled = false;
-        }        
+        }
+
+
+
+
+        /// <summary>
+        /// Inserts a book into the database along with a new author and the books audiance
+        /// </summary>
+        /// <param name="authorsName">the authors name</param>
+        /// <param name="genreName">the name of the genre</param>
+        /// <param name="isbn">the ISBN Number</param>
+        /// <param name="title">The books Title</param>
+        /// <param name="publishDate">the day the book was published in year-month-day like "2015-01-24"</param>
+        /// <param name="publisher">The name of the publisher</param>
+        /// <param name="readerType">The books target Audience</param>
+        private void InsertBook(string authorsName, string genreName, int isbn, string title, string publishDate, string publisher, string audienceType)
+        {
+            int authID = 0;
+            int audID = 0;
+            int genreID = 0;
+            bool exists = false;
+            //Checks to see if authors name exists in database
+            /*
+             * If SqlConnection and SqlCommand are NOT Functioning then
+             * 1) Right Click 'LibraryDatabase'
+             * 2) Click on Manage NuGet Packages option
+             * 3) In the NuGet Package Manager window, Select the Browser Tab. Search for System.Data.SqlClient
+             * 4) System.Data.SqlClient by Microsoft and click install
+             */
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                using (SqlCommand command = connection.CreateCommand())
+                {
+                    command.CommandText = "SELECT AuthorID, FullName FROM [LibraryDB].[Author]";
+                    connection.Open();
+                    SqlDataReader reader = command.ExecuteReader();
+                    try
+                    {
+                        while (reader.Read())
+                        {
+                            string form = String.Format("{0}", reader["FullName"]);
+                            if(form == authorsName)
+                            {
+                                exists = true;
+                                form = String.Format("{0}", reader["AuthorID"]);
+                                authID = int.Parse(form);
+                            }
+                            
+                        }
+                    }
+                    finally
+                    {
+                        reader.Close();
+                    }
+
+
+                    //Unlikly we need this
+                    /*
+                    //gets the AudianceID
+                    if (forKids)
+                    {
+                        command.CommandText = "INSERT INTO Audience (AudienceName, KidsRead) VALUES('" + audienceType + "', '1')";
+                    }
+                    else
+                    {
+                        command.CommandText = "INSERT INTO Audience (AudienceName, KidsRead) VALUES('" + audienceType + "', '0')";
+                    }
+                    command.ExecuteNonQuery();
+                    */
+
+                    //retrieves the Identity value for audience
+                    //unable to get a proper value as this entire table is stupid
+                    command.CommandText = "SELECT AudienceID, AudienceName, KidsRead FROM [LibraryDB].[Audience] WHERE AudienceName = " + audienceType;
+                    SqlDataReader reader2 = command.ExecuteReader();
+                    try
+                    {
+                        while (reader2.Read())
+                        {
+                            string form = String.Format("{0}", reader2["AudienceName"]);
+                            if (form.Equals(audienceType))
+                            {
+
+                                form = String.Format("{0}", reader2["AudienceID"]);
+                                audID = int.Parse(form);
+                            }
+
+                        }
+                    }
+                    finally
+                    {
+                        reader2.Close();
+                    }
+
+                    //gets the genreId from supplied genre
+                    command.CommandText = "SELECT GenreID, GenreName FROM [LibraryDB].[Genre] WHERE GenreName = " + genreName;
+                    SqlDataReader reader3 = command.ExecuteReader();
+                    try
+                    {
+                        while (reader3.Read())
+                        {
+                            string form = String.Format("{0}", reader3["GenreName"]);
+                            if (form.Equals(genreName))
+                            {
+
+                                form = String.Format("{0}", reader3["GenreID"]);
+                                genreID = int.Parse(form);
+                            }
+
+                        }
+                    }
+                    finally
+                    {
+                        reader3.Close();
+                    }
+                    connection.Close();
+                }
+            }
+
+            //if author doesn't exist then insert Author's name into LibraryDB.Author
+            //Then gets the Authors AuthorID from LibraryDB.Author
+            if (exists == false)
+            {
+                using (SqlConnection connection = new SqlConnection(connectionString))
+                {
+                    using (SqlCommand command = connection.CreateCommand())
+                    {
+                        command.CommandText = "INSERT INTO Author (FullName) VALUES('" + authorsName + "')";
+
+                        connection.Open();
+                        command.ExecuteNonQuery();
+
+                        command.CommandText = "SELECT AuthorID, FullName FROM [LibraryDB].[Author] WHERE FullName = " + authorsName;
+                        SqlDataReader reader = command.ExecuteReader();
+                        try
+                        {
+                            while (reader.Read())
+                            {
+                               string form = String.Format("{0}", reader["AuthorID"]);
+                                authID = int.Parse(form);
+                            }
+                        }
+                        finally
+                        {
+                            reader.Close();
+                        }
+                        connection.Close();
+                    }
+                }
+            }
+            //inserts the book into LibraryDB.BookTitle but no AudienceID and No GenreID
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                using (SqlCommand command = connection.CreateCommand())
+                {
+                    command.CommandText = "INSERT INTO BookTitle (AuthorID, AudienceID, GenreID, ISBN, Title, PublishDate, Publisher) " +
+                        "VALUES('"+ authID + "', '"+ audID + "', '"+ genreID + "','" + isbn + "', '"+ title + "', '"+ publishDate + "', '"+ publisher + "')";
+                    
+                    connection.Open();
+                    command.ExecuteNonQuery();
+                    connection.Close();
+                }
+            }
+        }
+
+        //when retrieving patron history information ingore all results whose checked out date equals its checked in date 
+
+        /// <summary>
+        /// Inserts a patron into the database
+        /// </summary>
+        /// <param name="cardNum">The number on the card</param>
+        /// <param name="name">the persons full name</param>
+        /// <param name="phoneNum">the individuals phone number</param>
+        /// <param name="address">the individuals address</param>
+        /// <param name="dateofBirth">the individuals Date of birth</param>
+        /// <param name="isKid">Whether or not the patron is a kid</param>
+        private void InsertPatron(int cardNum, string name, string phoneNum, string address, string dateofBirth, bool isKid)
+        {
+            int histID = 0;
+
+
+
+            //This retrieves the HistoryId number from the database
+            //when retrieving patron history information ingore all results whose checked out date equals its checked in date 
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                using (SqlCommand command = connection.CreateCommand())
+                {
+                    command.CommandText = "INSERT INTO History (BookCopyID, CheckedOutDate, CheckedInDate) VALUES('0', '2000-01-01 05:30:00', '2000-01-01 05:30:00')";
+                    connection.Open();
+                    command.ExecuteNonQuery();
+                    
+                    command.CommandText = "SELECT HistoryID FROM [LibraryDB].[History]";
+                    SqlDataReader reader = command.ExecuteReader();
+                    try
+                    {
+                        while (reader.Read())
+                        {
+                            string form = String.Format("{0}", reader["HistoryID"]);
+                            histID = int.Parse(form);
+                        }
+                    }
+                    finally
+                    {
+                        reader.Close();
+                    }
+                    connection.Close();
+                }
+            }
+
+
+
+            //inserts the Patron into the database
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                using (SqlCommand command = connection.CreateCommand())
+                {
+                    command.CommandText = "";
+                    if (isKid)
+                    {
+                        command.CommandText = "INSERT INTO Patron (HistoryID, CardNumber, [FullName], PhoneNumber, [Address], BirthDate, KidReader) " +
+                        "VALUES('" + histID + "', '" + cardNum + "', '" + name + "','" + phoneNum + "', '" + address + "', '" + dateofBirth + "', '0')";
+                    }
+                    else
+                    {
+                        command.CommandText = "INSERT INTO Patron (HistoryID, CardNumber, [FullName], PhoneNumber, [Address], BirthDate, KidReader) " +
+                        "VALUES('" + histID + "', '" + cardNum + "', '" + name + "','" + phoneNum + "', '" + address + "', '" + dateofBirth + "', '1')";
+                    }
+                    connection.Open();
+                    command.ExecuteNonQuery();
+                    connection.Close();
+                }
+            }
+        }
+
+        /// <summary>
+        /// Inserts a Genre into the database
+        /// </summary>
+        /// <param name="genreName">the name of the genre</param>
+        /// <returns>a bool of if the value was inserted or not</returns>
+        private bool InsertGenre(string genreName)
+        {
+            bool inserted = true;
+            bool exists = false;
+
+            //checks to see if genre already exists
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                using (SqlCommand command = connection.CreateCommand())
+                {
+                    command.CommandText = "SELECT GenreName FROM [LibraryDB].[Genre] WHERE GenreName =" + genreName;
+                    connection.Open();
+                    SqlDataReader reader = command.ExecuteReader();
+                    try
+                    {
+                        while (reader.Read())
+                        {
+                            string form = String.Format("{0}", reader["GenreName"]);
+                            if (form == genreName)
+                            {
+                                exists = true;
+                            }
+
+                        }
+                    }
+                    finally
+                    {
+                        reader.Close();
+                    }
+                    connection.Close();
+                }
+            }
+
+            //inserts if genre is not in the database
+            if(exists == false)
+            {
+                using (SqlConnection connection = new SqlConnection(connectionString))
+                {
+                    using (SqlCommand command = connection.CreateCommand())
+                    {
+                        command.CommandText = "INSERT INTO Genre (GenreName) VALUES('"+ genreName +"')";
+                    
+                        connection.Open();
+                        command.ExecuteNonQuery();
+                        connection.Close();
+                    }
+                }
+            }
+            else
+            {
+                inserted = false;
+            }
+            
+            return inserted;
+        }
+
+        /// <summary>
+        /// Inserts an audience into the database
+        /// </summary>
+        /// <param name="audienceName">the name of the audience the book is geared for</param>
+        /// <returns>a bool of if the value was inserted or not</returns>
+        private bool InsertAudience(string audienceName, bool forKids)
+        {
+            bool inserted = true;
+            bool exists = false;
+
+            //checks to see if audience already exists
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                using (SqlCommand command = connection.CreateCommand())
+                {
+                    command.CommandText = "SELECT AudienceName FROM [LibraryDB].[Audience] WHERE AudienceName =" + audienceName;
+                    connection.Open();
+                    SqlDataReader reader = command.ExecuteReader();
+                    try
+                    {
+                        while (reader.Read())
+                        {
+                            string form = String.Format("{0}", reader["AudienceName"]);
+                            if (form == audienceName)
+                            {
+                                exists = true;
+                            }
+
+                        }
+                    }
+                    finally
+                    {
+                        reader.Close();
+                    }
+                    connection.Close();
+                }
+            }
+
+            //inserts if audience is not in the database
+            if (exists == false)
+            {
+                using (SqlConnection connection = new SqlConnection(connectionString))
+                {
+                    using (SqlCommand command = connection.CreateCommand())
+                    {
+                        command.CommandText = "";
+                        if (forKids)
+                        {
+                            command.CommandText = "INSERT INTO [Audience] (AudienceName, KidsRead) VALUES('" + audienceName + "', '0')";
+                        }
+                        else
+                        {
+                            command.CommandText = "INSERT INTO [Audience] (AudienceName, KidsRead) VALUES('" + audienceName + "', '1')";
+                        }
+                        connection.Open();
+                        command.ExecuteNonQuery();
+                        connection.Close();
+                    }
+                }
+            }
+            else
+            {
+                inserted = false;
+            }
+
+            return inserted;
+        }
+
+        /// <summary>
+        /// gets a list of all books from the database
+        /// </summary>
+        /// <returns> a list of all book titles in the library</returns>
+        private List<string> GetBooks()
+        {
+            List<string> books = new List<string>();
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                using (SqlCommand command = connection.CreateCommand())
+                {
+                    command.CommandText = "SELECT BookTitleID, Title FROM [LibraryDB].[BookTitle]";
+                    connection.Open();
+                    SqlDataReader reader = command.ExecuteReader();
+                    try
+                    {
+                        while (reader.Read())
+                        {
+                            string form = String.Format("{0}", reader["Title"]);
+                            books.Add(form);
+
+                        }
+                    }
+                    finally
+                    {
+                        reader.Close();
+                    }
+
+                    connection.Close();
+                }
+            }
+            return books;
+        }
+
+        /// <summary>
+        /// gets a list of books from the database with set search parameters TODO
+        /// </summary>
+        /// <param name="searchRestrictions">the search restrictions</param>
+        /// <returns> a list of all book titles in the library</returns>
+        private List<string> GetBooks(string searchRestrictions)
+        {
+            List<string> books = new List<string>();
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                using (SqlCommand command = connection.CreateCommand())
+                {
+                    command.CommandText = "SELECT BookTitleID, Title FROM [LibraryDB].[BookTitle]";
+                    connection.Open();
+                    SqlDataReader reader = command.ExecuteReader();
+                    try
+                    {
+                        while (reader.Read())
+                        {
+                            string form = String.Format("{0}", reader["Title"]);
+                            books.Add(form);
+
+                        }
+                    }
+                    finally
+                    {
+                        reader.Close();
+                    }
+
+                    connection.Close();
+                }
+            }
+            return books;
+        }
+
+        /// <summary>
+        /// gets a list of patrons from the database
+        /// </summary>
+        /// <returns>a list of patrons</returns>
+        private List<string> GetPatrons()
+        {
+            List<string> patrons = new List<string>();
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                using (SqlCommand command = connection.CreateCommand())
+                {
+                    command.CommandText = "SELECT PatronID, [FullName] FROM [LibraryDB].[Patron]";
+                    connection.Open();
+                    SqlDataReader reader = command.ExecuteReader();
+                    try
+                    {
+                        while (reader.Read())
+                        {
+                            string form = String.Format("{0}", reader["[FullName]"]);
+                            patrons.Add(form);
+
+                        }
+                    }
+                    finally
+                    {
+                        reader.Close();
+                    }
+
+                    connection.Close();
+                }
+            }
+            return patrons;
+        }
+
     }
 }
