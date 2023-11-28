@@ -24,5 +24,21 @@ namespace LibraryDatabase
         {
             InitializeComponent();
         }
+
+        private void AddButton_Click(object sender, RoutedEventArgs e)
+        {
+            AddWindow AddBookWindow = new AddWindow(this);
+            AddBookWindow.Show();
+
+            IsEnabled = false;
+        }
+
+        private void AddPatronButton_Click(object sender, RoutedEventArgs e)
+        {
+            PatronWindow NewPatronWindow = new PatronWindow(this);
+            NewPatronWindow.Show();
+
+            IsEnabled = false;
+        }        
     }
 }
