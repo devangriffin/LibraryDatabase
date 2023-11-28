@@ -24,28 +24,44 @@ namespace LibraryDatabase
     {
         Window ParentWindow;
 
+        /// <summary>
+        /// AddWindow Constructor
+        /// </summary>
+        /// <param name="parentWindow">The previous window</param>
         public AddWindow(Window parentWindow)
         {
             ParentWindow = parentWindow;
 
             InitializeComponent();
 
+            // Sets the Combo Boxes to the the right values
             GenreComboBox.ItemsSource = Enum.GetValues(typeof(GenreEnum));
             AudienceComboBox.ItemsSource = Enum.GetValues(typeof(AudienceEnum));
 
             Closed += OnClosing;
         }
 
+        /// <summary>
+        /// Exits out of the window and enables the previous window
+        /// </summary>
+        /// <param name="sender">Button</param>
+        /// <param name="e">Event Args</param>
         private void CancelButton_Click(object sender, RoutedEventArgs e)
         {
             ParentWindow.IsEnabled = true;
             Close();
         }
 
+        /// <summary>
+        /// When the Add Button is pressed, a confirmation window is opened.
+        /// </summary>
+        /// <param name="sender">Button</param>
+        /// <param name="e">Event Args</param>
         private void AddButton_Click(object sender, RoutedEventArgs e)
         {
             BookTitle Book;
 
+            // Checks to make sure all fields have information
             if (TitleTextBox.Text == "" || AuthorTextBox.Text == "" || ISBNTextBox.Text == "" || PublisherTextBox.Text == "" || PublishDateBox.SelectedDate == null || AudienceComboBox.SelectedItem == null || GenreComboBox.SelectedItem == null)
             {
                 ErrorTextBlock.Visibility = Visibility.Visible;
@@ -57,7 +73,7 @@ namespace LibraryDatabase
             {
                 Book = new BookTitle(0, (int)AudienceComboBox.SelectedItem, (int)GenreComboBox.SelectedItem, Convert.ToInt32(ISBNTextBox.Text), TitleTextBox.Text, PublisherTextBox.Text, DateOnly.FromDateTime(PublishDateBox.DisplayDate));
             }
-            catch // FormatException?
+            catch // Catches any formatting errors - FormatException?
             {
                 ErrorTextBlock.Visibility = Visibility.Visible;
                 return;
@@ -65,6 +81,7 @@ namespace LibraryDatabase
 
             ErrorTextBlock.Visibility = Visibility.Hidden;
 
+            // Creates a confimation window
             BookInfoWindow InfoWindow = new BookInfoWindow(Book, this);
 
             InfoWindow.Show();
@@ -72,7 +89,11 @@ namespace LibraryDatabase
             IsEnabled = false;
         }
 
-        
+        /// <summary>
+        /// Makes sure the parent window is enabled when this window is closed.
+        /// </summary>
+        /// <param name="sender">Object</param>
+        /// <param name="e">Event Arguments</param>
         private void OnClosing(object sender, EventArgs e) { ParentWindow.IsEnabled = true; }
     }
 }

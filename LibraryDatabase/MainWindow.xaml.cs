@@ -38,14 +38,19 @@ namespace LibraryDatabase
         "Password=Secret;";
         */
 
-
-
-
+        /// <summary>
+        /// Constructor
+        /// </summary>
         public MainWindow()
         {
             InitializeComponent();
         }
         
+        /// <summary>
+        /// Creates a new Add Window for books when Add button is clicked
+        /// </summary>
+        /// <param name="sender">The Button</param>
+        /// <param name="e">Event Arguments</param>
         private void AddButton_Click(object sender, RoutedEventArgs e)
         {
             AddWindow AddBookWindow = new AddWindow(this);
@@ -54,6 +59,11 @@ namespace LibraryDatabase
             IsEnabled = false;
         }
 
+        /// <summary>
+        /// Creates a new Add Window for patrons when Add Patron button is clicked
+        /// </summary>
+        /// <param name="sender">The Button</param>
+        /// <param name="e">Event Arguments</param>
         private void AddPatronButton_Click(object sender, RoutedEventArgs e)
         {
             PatronWindow NewPatronWindow = new PatronWindow(this);
