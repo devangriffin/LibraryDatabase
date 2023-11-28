@@ -14,6 +14,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using System.ComponentModel;
+using System.Data.SqlClient;
 
 namespace LibraryDatabase
 {
@@ -23,6 +24,9 @@ namespace LibraryDatabase
     public partial class AddWindow : Window
     {
         Window ParentWindow;
+
+
+
 
         public AddWindow(Window parentWindow)
         {
@@ -55,6 +59,7 @@ namespace LibraryDatabase
             // Temporary Values for ID
             try
             {
+              
                 Book = new BookTitle(0, (int)AudienceComboBox.SelectedItem, (int)GenreComboBox.SelectedItem, Convert.ToInt32(ISBNTextBox.Text), TitleTextBox.Text, PublisherTextBox.Text, DateOnly.FromDateTime(PublishDateBox.DisplayDate));
             }
             catch // FormatException?
@@ -72,7 +77,8 @@ namespace LibraryDatabase
             IsEnabled = false;
         }
 
-        
+
+
         private void OnClosing(object sender, EventArgs e) { ParentWindow.IsEnabled = true; }
     }
 }
