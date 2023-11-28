@@ -14,6 +14,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using System.ComponentModel;
+using System.Data.SqlClient;
 
 namespace LibraryDatabase
 {
@@ -71,6 +72,7 @@ namespace LibraryDatabase
             // Temporary Values for ID
             try
             {
+              
                 Book = new BookTitle(0, (int)AudienceComboBox.SelectedItem, (int)GenreComboBox.SelectedItem, Convert.ToInt32(ISBNTextBox.Text), TitleTextBox.Text, PublisherTextBox.Text, DateOnly.FromDateTime(PublishDateBox.DisplayDate));
             }
             catch // Catches any formatting errors - FormatException?
