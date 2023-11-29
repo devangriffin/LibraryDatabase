@@ -41,15 +41,6 @@ namespace LibraryDatabase
 
             Closed += OnClosing;
         }
-        
-        /// <summary>
-        /// gets the author name from this textbox
-        /// </summary>
-        /// <returns></returns>
-        public string GetAuthor()
-        {
-            return AuthorTextBox.Text;
-        }
 
         /// <summary>
         /// Exits out of the window and enables the previous window
@@ -81,7 +72,7 @@ namespace LibraryDatabase
             // Temporary Values for ID
             try
             {
-                Book = new BookTitle(0, (int)AudienceComboBox.SelectedItem, (int)GenreComboBox.SelectedItem, Convert.ToInt32(ISBNTextBox.Text), TitleTextBox.Text, PublisherTextBox.Text, DateOnly.FromDateTime(PublishDateBox.DisplayDate));
+                Book = new BookTitle(0, AuthorTextBox.Text, (int)AudienceComboBox.SelectedItem, (int)GenreComboBox.SelectedItem, ISBNTextBox.Text, TitleTextBox.Text, PublisherTextBox.Text, DateOnly.FromDateTime(PublishDateBox.DisplayDate));
             }
             catch // Catches any formatting errors - FormatException?
             {

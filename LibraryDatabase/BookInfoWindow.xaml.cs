@@ -42,7 +42,7 @@ namespace LibraryDatabase
         public void InitializeTextBlocks()
         {
             BookTitleBlock.Text = Book.Title;
-            BookAuthorBlock.Text = ParentWindow.GetAuthor();
+            BookAuthorBlock.Text = Book.AuthorsName;
             BookISBNBlock.Text = Book.ISBN.ToString();
             BookPublisherBlock.Text = Book.Publisher;
             BookPublishDateBlock.Text = Book.PublishDate.ToString();
@@ -58,7 +58,7 @@ namespace LibraryDatabase
 
         private void ConfirmButton_Click(object sender, RoutedEventArgs e)
         {
-            InsertBook(ParentWindow.GetAuthor(), Book.GenreID, Book.ISBN, Book.Title, Book.PublishDate.ToString(), Book.Publisher, Book.AudienceID);
+            InsertBook(Book.AuthorsName, Book.GenreID, Book.ISBN, Book.Title, Book.PublishDate.ToString(), Book.Publisher, Book.AudienceID);
             ParentWindow.Close();
             Close();
         }
@@ -73,7 +73,7 @@ namespace LibraryDatabase
         /// <param name="publishDate">the day the book was published in year-month-day like "2015-01-24"</param>
         /// <param name="publisher">The name of the publisher</param>
         /// <param name="readerType">The books target Audience</param>
-        private void InsertBook(string authorsName, int genreName, int isbn, string title, string publishDate, string publisher, int audienceType)
+        private void InsertBook(string authorsName, int genreName, string isbn, string title, string publishDate, string publisher, int audienceType)
         {
             int authID = 0;
             bool exists = false;
