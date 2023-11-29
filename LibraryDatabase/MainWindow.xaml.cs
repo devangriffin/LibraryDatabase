@@ -12,7 +12,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using System.Data.SqlClient;
+using Microsoft.Data.SqlClient;
 using System.Net;
 using LibraryDatabase.Objects;
 using static System.Reflection.Metadata.BlobBuilder;
@@ -29,7 +29,7 @@ namespace LibraryDatabase
         /// <summary>
         /// used anytime we need to connect to the database and interface with any of the information
         /// </summary>
-        private string connectionString = "Data Source=.;Initial Catalog=LibraryDB;Integrated Security=True;MultipleActiveResultSets=True";
+        private string connectionString = @"Data Source=(localdb)\MSSQLLocalDb;Initial Catalog= LibraryDB;Integrated Security=SSPI;";
         
         /*
          * When we have a server up and running this is for security and would be used instead for connectionString
@@ -127,12 +127,12 @@ namespace LibraryDatabase
                 {
                     using (SqlCommand command = connection.CreateCommand())
                     {
-                        command.CommandText = "INSERT INTO Author (FullName) VALUES('" + authorsName + "')";
+                        command.CommandText = "INSERT INTO [LibraryDB].[Author](FullName) VALUES('" + authorsName + "')";
 
                         connection.Open();
                         command.ExecuteNonQuery();
 
-                        command.CommandText = "SELECT AuthorID, FullName FROM [LibraryDB].[Author] WHERE FullName = " + authorsName;
+                        command.CommandText = "SELECT AuthorID, FullName FROM [LibraryDB].[Author] WHERE FullName = " + authorsName + "'";
                         SqlDataReader reader = command.ExecuteReader();
                         try
                         {
@@ -155,7 +155,7 @@ namespace LibraryDatabase
             {
                 using (SqlCommand command = connection.CreateCommand())
                 {
-                    command.CommandText = "INSERT INTO BookTitle (AuthorID, AudienceID, GenreID, ISBN, Title, PublishDate, Publisher) " +
+                    command.CommandText = "INSERT INTO [LibraryDB].[BookTitle] (AuthorID, AudienceID, GenreID, ISBN, Title, PublishDate, Publisher) " +
                         "VALUES('"+ authID + "', '"+ audienceType + "', '"+ genreName + "','" + isbn + "', '"+ title + "', '"+ publishDate + "', '"+ publisher + "')";
                     
                     connection.Open();
@@ -250,7 +250,7 @@ namespace LibraryDatabase
             {
                 using (SqlCommand command = connection.CreateCommand())
                 {
-                    command.CommandText = "SELECT GenreName FROM [LibraryDB].[Genre] WHERE GenreName =" + genreName;
+                    command.CommandText = "SELECT GenreName FROM [LibraryDB].[Genre] WHERE GenreName =" + genreName + "'";
                     connection.Open();
                     SqlDataReader reader = command.ExecuteReader();
                     try
@@ -280,7 +280,7 @@ namespace LibraryDatabase
                 {
                     using (SqlCommand command = connection.CreateCommand())
                     {
-                        command.CommandText = "INSERT INTO Genre (GenreName) VALUES('"+ genreName +"')";
+                        command.CommandText = "INSERT INTO [LibraryDB].[Genre](GenreName) VALUES('" + genreName +"')";
                     
                         connection.Open();
                         command.ExecuteNonQuery();
@@ -311,7 +311,7 @@ namespace LibraryDatabase
             {
                 using (SqlCommand command = connection.CreateCommand())
                 {
-                    command.CommandText = "SELECT AudienceName FROM [LibraryDB].[Audience] WHERE AudienceName =" + audienceName;
+                    command.CommandText = "SELECT AudienceName FROM [LibraryDB].[Audience] WHERE AudienceName =" + audienceName + "'";
                     connection.Open();
                     SqlDataReader reader = command.ExecuteReader();
                     try
@@ -344,11 +344,11 @@ namespace LibraryDatabase
                         command.CommandText = "";
                         if (forKids)
                         {
-                            command.CommandText = "INSERT INTO [Audience] (AudienceName, KidsRead) VALUES('" + audienceName + "', '0')";
+                            command.CommandText = "INSERT INTO [LibraryDB].[Audience](AudienceName, KidsRead) VALUES('" + audienceName + "', '0')";
                         }
                         else
                         {
-                            command.CommandText = "INSERT INTO [Audience] (AudienceName, KidsRead) VALUES('" + audienceName + "', '1')";
+                            command.CommandText = "INSERT INTO [LibraryDB].[Audience](AudienceName, KidsRead) VALUES('" + audienceName + "', '1')";
                         }
                         connection.Open();
                         command.ExecuteNonQuery();
@@ -383,7 +383,11 @@ namespace LibraryDatabase
                         while (reader.Read())
                         {
                             string form = String.Format("{0}", reader["Title"]);
-                            books.Add(form);
+                            if (!(form.Equals("Test")))
+                            {
+                                books.Add(form);
+                            }
+                            
 
                         }
                     }
@@ -410,7 +414,7 @@ namespace LibraryDatabase
             {
                 using (SqlCommand command = connection.CreateCommand())
                 {
-                    command.CommandText = "SELECT BookTitleID, Title FROM [LibraryDB].[BookTitle] WHERE";
+                    command.CommandText = "SELECT BookTitleID, Title FROM [LibraryDB].[BookTitle] WHERE Title = " + name + "'";
                     connection.Open();
                     SqlDataReader reader = command.ExecuteReader();
                     try
@@ -473,5 +477,16 @@ namespace LibraryDatabase
             return patrons;
         }
 
+        /// <summary>
+        /// updates the list view when an item is added
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void Grid_IsEnabledChanged(object sender, DependencyPropertyChangedEventArgs e)
+        {
+            List<string> BookTitles = GetBooks();
+            TheBooks.ItemsSource = BookTitles;
+            
+        }
     }
 }
