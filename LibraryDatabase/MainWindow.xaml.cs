@@ -575,7 +575,7 @@ namespace LibraryDatabase
             {
                 using (SqlCommand command = connection.CreateCommand())
                 {
-                    command.CommandText = "SELECT * FROM [LibraryDB].[Patron]";
+                    command.CommandText = "SELECT * FROM [LibraryDB].[Patron] ORDER BY [FullName] ASC";
                     connection.Open();
                     SqlDataReader reader = command.ExecuteReader();
                     try
