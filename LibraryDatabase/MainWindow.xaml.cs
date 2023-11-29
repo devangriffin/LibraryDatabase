@@ -26,6 +26,8 @@ namespace LibraryDatabase
     /// </summary>
     public partial class MainWindow : Window
     {
+        private List<BookTitle> BookList;
+
         /// <summary>
         /// used anytime we need to connect to the database and interface with any of the information
         /// </summary>
@@ -45,7 +47,11 @@ namespace LibraryDatabase
         public MainWindow()
         {
             InitializeComponent();
-            
+            BookList = new List<BookTitle>();
+            BookList.Add(new BookTitle(-1, 1, 1, 12356, "Narnia", "No Clue", new DateOnly(2022, 1, 2)));
+            LibraryListView.ItemsSource = BookList;
+     
+            //ResizeColumns();
         }
         
         /// <summary>
@@ -74,8 +80,24 @@ namespace LibraryDatabase
             IsEnabled = false;
         }
 
+        public void PopulateData()
+        {
+            //AudienceColumn.DisplayMemberBinding = "GenreID";
+            //BookList = GetBooks();
+            //LibraryDataGrid.ItemsSource = BookList;
+        }
 
-
+        private void ResizeColumns()
+        {
+            double ColumnWidth = 1;
+            TitleColumn.Width = ColumnWidth;
+            AuthorColumn.Width = ColumnWidth;
+            ISBNColumn.Width = ColumnWidth;
+            PublishDateColumn.Width = ColumnWidth;
+            PublisherColumn.Width = ColumnWidth;
+            AudienceColumn.Width = ColumnWidth;
+            GenreColumn.Width = ColumnWidth;
+        }
 
         /// <summary>
         /// Inserts a book into the database along with a new author and the books audiance
