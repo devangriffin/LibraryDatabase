@@ -42,7 +42,7 @@ namespace LibraryDatabase
 
             try
             {
-                newPatron = new Patron(Convert.ToInt32(CardNumberTextBox.Text.Trim()), NameTextBox.Text.Trim(), PhoneNumberTextBox.Text.Trim(), MergeAddressBoxes(), DateOnly.FromDateTime(BirthDateTextBox.DisplayDate), (bool)KidReaderCheckBox.IsChecked);
+                newPatron = new Patron(-1, Convert.ToInt32(CardNumberTextBox.Text.Trim()), NameTextBox.Text.Trim(), PhoneNumberTextBox.Text.Trim(), MergeAddressBoxes(), DateOnly.FromDateTime(BirthDateTextBox.DisplayDate), (bool)KidReaderCheckBox.IsChecked);
             }
             catch (Exception ex)
             {
