@@ -15,11 +15,11 @@ DROP TABLE IF EXISTS LibraryDB.Author;
 CREATE TABLE LibraryDB.Author
 (
 	AuthorID INT IDENTITY NOT NULL PRIMARY KEY,
-	FullName NVARCHAR(128) NOT NULL,
-	College NVARCHAR(128),
-	HomeCountry NVARCHAR(128),
+	FullName NVARCHAR(64) NOT NULL,
+	College NVARCHAR(64),
+	HomeCountry NVARCHAR(64),
 	BirthDate DATETIME,
-	LifeStatus NVARCHAR(64)
+	LifeStatus NVARCHAR(32)
 );
 
 CREATE TABLE LibraryDB.Audience
@@ -47,7 +47,7 @@ CREATE TABLE LibraryDB.BookTitle
 	ISBN INT UNIQUE NOT NULL,
 	Title NVARCHAR(128) NOT NULL,
 	PublishDate DATE,
-	Publisher NVARCHAR(128)
+	Publisher NVARCHAR(64)
 );
 
 CREATE TABLE LibraryDB.Shelf
@@ -83,7 +83,7 @@ CREATE TABLE LibraryDB.Patron
 	HistoryID INT NOT NULL FOREIGN KEY
 		REFERENCES LibraryDB.History(HistoryID),
 	CardNumber INT NOT NULL UNIQUE,
-	[FullName] NVARCHAR(128) NOT NULL,
+	[FullName] NVARCHAR(64) NOT NULL,
 	PhoneNumber NVARCHAR(16),
 	[Address] NVARCHAR(128) NOT NULL,
 	BirthDate DATE NOT NULL,

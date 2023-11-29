@@ -15,6 +15,9 @@ namespace LibraryDatabase.Objects
         public string Title { get; }
         public string Publisher { get; }
         public DateOnly PublishDate { get; }
+        public AudienceEnum Audience { get { return (AudienceEnum)AudienceID; } }
+        public GenreEnum Genre { get { return (GenreEnum)GenreID; } }
+        public string DateString { get { return PublishDate.ToString(); } }
 
         public BookTitle(int bookTitleID, int audienceID, int genreID, int isbn, string title, string publisher, DateOnly publishDate)
         {
