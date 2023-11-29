@@ -26,9 +26,8 @@ namespace LibraryDatabase
     /// </summary>
     public partial class MainWindow : Window
     {
-        private List<BookTitle> BookList;
-        private List<Patron> PatronList;
-
+        // private List<BookTitle> BookList;
+        // private List<Patron> PatronList;
         /// <summary>
         /// used anytime we need to connect to the database and interface with any of the information
         /// </summary>
@@ -54,11 +53,9 @@ namespace LibraryDatabase
 
         private void SetItemSources()
         {
-            BookList = GetBookList();
-            LibraryListView.ItemsSource = BookList;
-
-            PatronList = GetPatronList();
-            PatronListView.ItemsSource = PatronList;
+            LibraryListView.ItemsSource = GetBookList();
+            PatronListView.ItemsSource = GetPatronList();
+            GenreCountListView.ItemsSource = GetGenreCounts();
         }
 
         /// <summary>
@@ -89,26 +86,46 @@ namespace LibraryDatabase
 
         private void PatronListButton_Click(object sender, RoutedEventArgs e)
         {
-            LibraryListView.Visibility = Visibility.Collapsed;
-            LibraryListView.IsEnabled = false;
-
-            PatronListView.Visibility = Visibility.Visible;
-            PatronListView.IsEnabled = true;
-
-            PatronListButton.IsEnabled = false;
-            BookListButton.IsEnabled = true;
+            DisableOtherViews(PatronListView, PatronListButton);
+            SetItemSources();
         }
 
         private void BookListButton_Click(object sender, RoutedEventArgs e)
         {
-            PatronListView.Visibility = Visibility.Collapsed;
-            PatronListView.IsEnabled = false;
+            DisableOtherViews(LibraryListView, BookListButton);
+            SetItemSources();
+        }
 
-            LibraryListView.Visibility = Visibility.Visible;
-            LibraryListView.IsEnabled = true;
+        private void GenreCountButton_Click(object sender, RoutedEventArgs e)
+        {
+            DisableOtherViews(GenreCountListView, GenreCountButton);
+            SetItemSources();
+        }
 
-            PatronListButton.IsEnabled = true;
-            BookListButton.IsEnabled = false;
+        private void DisableOtherViews(ListView listView, Button button)
+        {
+            foreach (UIElement element in LibraryGrid.Children)
+            {
+                if (element is Button button2)
+                {
+                    if (button.Name == button2.Name) { button.IsEnabled = false; }
+                    else { button2.IsEnabled = true; }
+                }
+
+                if (element is ListView listView2)
+                {
+                    if (listView.Name == listView2.Name)
+                    {
+                        listView.IsEnabled = true;
+                        listView.Visibility = Visibility.Visible;
+                    }
+                    else
+                    {
+                        listView2.IsEnabled = false;
+                        listView2.Visibility = Visibility.Collapsed;
+                    }
+                }
+            }
         }
 
         public void PopulateData()
@@ -535,6 +552,43 @@ namespace LibraryDatabase
                     connection.Close();
                 }
             }
+            return list;
+        }
+
+        private List<KeyValuePair<string, int>> GetGenreCounts()
+        {
+            List<KeyValuePair<string, int>> list = new List<KeyValuePair<string, int>>();
+
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                using (SqlCommand command = connection.CreateCommand())
+                {
+                    command.CommandText =   "SELECT G.GenreName, COUNT(BT.BookTitleID) AS BookCount\r\n" +
+                                            "FROM LibraryDB.Genre G\r\n" +
+                                            "LEFT JOIN LibraryDB.BookTitle BT ON BT.GenreID = G.GenreID\r\n" +
+                                            "GROUP BY G.GenreName\r\n" +
+                                            "ORDER BY G.GenreName;";
+                    connection.Open();
+                    SqlDataReader reader = command.ExecuteReader();
+                    try
+                    {
+                        while (reader.Read())
+                        {
+                            string genreName = (String.Format("{0}", reader["GenreName"]));
+                            int bookCount = Convert.ToInt32(String.Format("{0}", reader["BookCount"]));
+
+                            list.Add(new KeyValuePair<string, int>(genreName, bookCount));
+                        }
+                    }
+                    finally
+                    {
+                        reader.Close();
+                    }
+
+                    connection.Close();
+                }
+            }
+           
             return list;
         }
 
