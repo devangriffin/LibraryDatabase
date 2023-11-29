@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:LibraryDatabase"
         mc:Ignorable="d"
         Title="MainWindow" Height="600" Width="1000">
-    <Grid>
+    <Grid IsEnabledChanged="Grid_IsEnabledChanged">
         <Grid.RowDefinitions>
             <RowDefinition/>
             <RowDefinition Height="5*"/>
@@ -14,6 +14,7 @@
         </Grid.RowDefinitions>
         
         <TextBlock Text="Library Database" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="32"/>
+        <ListView x:Name="TheBooks" Margin="10" Grid.Row="1"/>
         
         <!-- 
         <DataGrid x:Name="LibraryDataGrid" Margin="10" Grid.Row="1">

@@ -23,7 +23,7 @@ namespace LibraryDatabase
     /// </summary>
     public partial class AddWindow : Window
     {
-        Window ParentWindow;
+        MainWindow ParentWindow;
 
         /// <summary>
         /// AddWindow Constructor
@@ -40,6 +40,15 @@ namespace LibraryDatabase
             AudienceComboBox.ItemsSource = Enum.GetValues(typeof(AudienceEnum));
 
             Closed += OnClosing;
+        }
+        
+        /// <summary>
+        /// gets the author name from this textbox
+        /// </summary>
+        /// <returns></returns>
+        public string GetAuthor()
+        {
+            return AuthorTextBox.Text;
         }
 
         /// <summary>
@@ -72,7 +81,6 @@ namespace LibraryDatabase
             // Temporary Values for ID
             try
             {
-              
                 Book = new BookTitle(0, (int)AudienceComboBox.SelectedItem, (int)GenreComboBox.SelectedItem, Convert.ToInt32(ISBNTextBox.Text), TitleTextBox.Text, PublisherTextBox.Text, DateOnly.FromDateTime(PublishDateBox.DisplayDate));
             }
             catch // Catches any formatting errors - FormatException?
