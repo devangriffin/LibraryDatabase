@@ -32,7 +32,7 @@ namespace LibraryDatabase
         /// used anytime we need to connect to the database and interface with any of the information
         /// </summary>
         private string connectionString = @"Data Source=(localdb)\MSSQLLocalDb;Initial Catalog= LibraryDB;Integrated Security=SSPI;";
-        
+
         /*
          * When we have a server up and running this is for security and would be used instead for connectionString
         "Data Source=serverName;" +
@@ -47,12 +47,12 @@ namespace LibraryDatabase
         public MainWindow()
         {
             InitializeComponent();
+
             BookList = new List<BookTitle>();
+            BookList = GetBookList();
             LibraryListView.ItemsSource = BookList;
-     
-            //ResizeColumns();
         }
-        
+
         /// <summary>
         /// Creates a new Add Window for books when Add button is clicked
         /// </summary>
@@ -84,18 +84,6 @@ namespace LibraryDatabase
             //AudienceColumn.DisplayMemberBinding = "GenreID";
             //BookList = GetBooks();
             //LibraryDataGrid.ItemsSource = BookList;
-        }
-
-        private void ResizeColumns()
-        {
-            double ColumnWidth = 1;
-            TitleColumn.Width = ColumnWidth;
-            AuthorColumn.Width = ColumnWidth;
-            ISBNColumn.Width = ColumnWidth;
-            PublishDateColumn.Width = ColumnWidth;
-            PublisherColumn.Width = ColumnWidth;
-            AudienceColumn.Width = ColumnWidth;
-            GenreColumn.Width = ColumnWidth;
         }
 
         /// <summary>
@@ -132,13 +120,13 @@ namespace LibraryDatabase
                         while (reader.Read())
                         {
                             string form = String.Format("{0}", reader["FullName"]);
-                            if(form == authorsName)
+                            if (form == authorsName)
                             {
                                 exists = true;
                                 form = String.Format("{0}", reader["AuthorID"]);
                                 authID = int.Parse(form);
                             }
-                            
+
                         }
                     }
                     finally
@@ -169,7 +157,7 @@ namespace LibraryDatabase
                         {
                             while (reader.Read())
                             {
-                               string form = String.Format("{0}", reader["AuthorID"]);
+                                string form = String.Format("{0}", reader["AuthorID"]);
                                 authID = int.Parse(form);
                             }
                         }
@@ -187,8 +175,8 @@ namespace LibraryDatabase
                 using (SqlCommand command = connection.CreateCommand())
                 {
                     command.CommandText = "INSERT INTO [LibraryDB].[BookTitle] (AuthorID, AudienceID, GenreID, ISBN, Title, PublishDate, Publisher) " +
-                        "VALUES('"+ authID + "', '"+ audienceType + "', '"+ genreName + "','" + isbn + "', '"+ title + "', '"+ publishDate + "', '"+ publisher + "')";
-                    
+                        "VALUES('" + authID + "', '" + audienceType + "', '" + genreName + "','" + isbn + "', '" + title + "', '" + publishDate + "', '" + publisher + "')";
+
                     connection.Open();
                     command.ExecuteNonQuery();
                     connection.Close();
@@ -222,7 +210,7 @@ namespace LibraryDatabase
                     command.CommandText = "INSERT INTO History (BookCopyID, CheckedOutDate, CheckedInDate) VALUES('0', '2000-01-01 05:30:00', '2000-01-01 05:30:00')";
                     connection.Open();
                     command.ExecuteNonQuery();
-                    
+
                     command.CommandText = "SELECT HistoryID FROM [LibraryDB].[History]";
                     SqlDataReader reader = command.ExecuteReader();
                     try
@@ -305,14 +293,14 @@ namespace LibraryDatabase
             }
 
             //inserts if genre is not in the database
-            if(exists == false)
+            if (exists == false)
             {
                 using (SqlConnection connection = new SqlConnection(connectionString))
                 {
                     using (SqlCommand command = connection.CreateCommand())
                     {
-                        command.CommandText = "INSERT INTO [LibraryDB].[Genre](GenreName) VALUES('" + genreName +"')";
-                    
+                        command.CommandText = "INSERT INTO [LibraryDB].[Genre](GenreName) VALUES('" + genreName + "')";
+
                         connection.Open();
                         command.ExecuteNonQuery();
                         connection.Close();
@@ -323,7 +311,7 @@ namespace LibraryDatabase
             {
                 inserted = false;
             }
-            
+
             return inserted;
         }
 
@@ -418,7 +406,7 @@ namespace LibraryDatabase
                             {
                                 books.Add(form);
                             }
-                            
+
 
                         }
                     }
@@ -431,6 +419,46 @@ namespace LibraryDatabase
                 }
             }
             return books;
+        }
+
+        private List<BookTitle> GetBookList()
+        {
+            List<BookTitle> list = new List<BookTitle>();
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                using (SqlCommand command = connection.CreateCommand())
+                {
+                    command.CommandText = "SELECT * FROM [LibraryDB].[BookTitle]";
+                    connection.Open();
+                    SqlDataReader reader = command.ExecuteReader();
+                    try
+                    {
+                        while (reader.Read())
+                        {
+                            string bookTitleID = String.Format("{0}", reader["BookTitleID"]);
+                            string title = String.Format("{0}", reader["Title"]);
+                            string authorID = String.Format("{0}", reader["AuthorID"]);
+                            string isbn = String.Format("{0}", reader["ISBN"]);
+                            string publishDate = String.Format("{0}", reader["PublishDate"]);
+                            string publisher = String.Format("{0}", reader["Publisher"]);
+                            string audienceID = String.Format("{0}", reader["AudienceID"]);
+                            string genreID = String.Format("{0}", reader["GenreID"]);
+
+                            BookTitle newBook = new BookTitle(Convert.ToInt32(bookTitleID), Convert.ToInt32(audienceID), Convert.ToInt32(genreID), Convert.ToInt32(isbn),
+                                title, publisher, DateOnly.FromDateTime(Convert.ToDateTime(publishDate)));
+
+                            list.Add(newBook);
+                        }
+                    }
+                    finally
+                    {
+                        reader.Close();
+                    }
+
+                    connection.Close();
+                }
+            }
+            return list;
         }
 
         /// <summary>
@@ -458,8 +486,8 @@ namespace LibraryDatabase
                                 form = String.Format("{0}", reader["Title"]);
                                 books.Add(form);
                             }
-                            
-                            
+
+
 
                         }
                     }
@@ -515,9 +543,8 @@ namespace LibraryDatabase
         /// <param name="e"></param>
         private void Grid_IsEnabledChanged(object sender, DependencyPropertyChangedEventArgs e)
         {
-            List<string> BookTitles = GetBooks();
-            TheBooks.ItemsSource = BookTitles;
-            
+            BookList = GetBookList();
+            LibraryListView.ItemsSource = BookList;
         }
     }
 }
