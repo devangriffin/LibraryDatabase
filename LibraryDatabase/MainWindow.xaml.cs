@@ -48,7 +48,6 @@ namespace LibraryDatabase
         {
             InitializeComponent();
             BookList = new List<BookTitle>();
-            BookList.Add(new BookTitle(-1, 1, 1, 12356, "Narnia", "No Clue", new DateOnly(2022, 1, 2)));
             LibraryListView.ItemsSource = BookList;
      
             //ResizeColumns();

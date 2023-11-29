@@ -29,7 +29,7 @@ namespace LibraryDatabase
         /// AddWindow Constructor
         /// </summary>
         /// <param name="parentWindow">The previous window</param>
-        public AddWindow(Window parentWindow)
+        public AddWindow(MainWindow parentWindow)
         {
             ParentWindow = parentWindow;
 
