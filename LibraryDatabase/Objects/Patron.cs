@@ -17,8 +17,9 @@ namespace LibraryDatabase.Objects
         public DateOnly BirthDate { get; }
         public bool KidReader { get; }
 
-        public Patron(int cardNum, string name, string phoneNum, string add, DateOnly birthDate, bool kid)
+        public Patron(int patronID, int cardNum, string name, string phoneNum, string add, DateOnly birthDate, bool kid)
         {
+            PatronID = patronID;
             CardNumber = cardNum;
             Name = name;
             PhoneNumber = phoneNum;
@@ -27,7 +28,6 @@ namespace LibraryDatabase.Objects
             KidReader = kid;
 
             // Temp Numbers
-            PatronID = -1;
             LoanID = -1;
         }
     }

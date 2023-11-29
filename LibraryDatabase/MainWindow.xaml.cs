@@ -27,6 +27,7 @@ namespace LibraryDatabase
     public partial class MainWindow : Window
     {
         private List<BookTitle> BookList;
+        private List<Patron> PatronList;
 
         /// <summary>
         /// used anytime we need to connect to the database and interface with any of the information
@@ -48,9 +49,16 @@ namespace LibraryDatabase
         {
             InitializeComponent();
 
-            BookList = new List<BookTitle>();
+            SetItemSources();
+        }
+
+        private void SetItemSources()
+        {
             BookList = GetBookList();
             LibraryListView.ItemsSource = BookList;
+
+            PatronList = GetPatronList();
+            PatronListView.ItemsSource = PatronList;
         }
 
         /// <summary>
@@ -79,12 +87,38 @@ namespace LibraryDatabase
             IsEnabled = false;
         }
 
+        private void PatronListButton_Click(object sender, RoutedEventArgs e)
+        {
+            LibraryListView.Visibility = Visibility.Collapsed;
+            LibraryListView.IsEnabled = false;
+
+            PatronListView.Visibility = Visibility.Visible;
+            PatronListView.IsEnabled = true;
+
+            PatronListButton.IsEnabled = false;
+            BookListButton.IsEnabled = true;
+        }
+
+        private void BookListButton_Click(object sender, RoutedEventArgs e)
+        {
+            PatronListView.Visibility = Visibility.Collapsed;
+            PatronListView.IsEnabled = false;
+
+            LibraryListView.Visibility = Visibility.Visible;
+            LibraryListView.IsEnabled = true;
+
+            PatronListButton.IsEnabled = true;
+            BookListButton.IsEnabled = false;
+        }
+
         public void PopulateData()
         {
             //AudienceColumn.DisplayMemberBinding = "GenreID";
             //BookList = GetBooks();
             //LibraryDataGrid.ItemsSource = BookList;
         }
+
+        #region InsertMethods (Moved)
 
         /// <summary>
         /// Inserts a book into the database along with a new author and the books audiance
@@ -254,6 +288,9 @@ namespace LibraryDatabase
             }
         }
 
+        #endregion
+
+        #region InsertGenre/Audience (Removed)
         /// <summary>
         /// Inserts a Genre into the database
         /// </summary>
@@ -383,6 +420,8 @@ namespace LibraryDatabase
             return inserted;
         }
 
+        #endregion
+
         /// <summary>
         /// gets a list of all books from the database
         /// </summary>
@@ -448,6 +487,44 @@ namespace LibraryDatabase
                                 title, publisher, DateOnly.FromDateTime(Convert.ToDateTime(publishDate)));
 
                             list.Add(newBook);
+                        }
+                    }
+                    finally
+                    {
+                        reader.Close();
+                    }
+
+                    connection.Close();
+                }
+            }
+            return list;
+        }
+
+        private List<Patron> GetPatronList()
+        {
+            List<Patron> list = new List<Patron>();
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                using (SqlCommand command = connection.CreateCommand())
+                {
+                    command.CommandText = "SELECT * FROM [LibraryDB].[Patron]";
+                    connection.Open();
+                    SqlDataReader reader = command.ExecuteReader();
+                    try
+                    {
+                        while (reader.Read())
+                        {
+                            int patronID = Convert.ToInt32(String.Format("{0}", reader["PatronID"]));
+                            int cardNumber = Convert.ToInt32(String.Format("{0}", reader["CardNumber"]));
+                            string fullName = String.Format("{0}", reader["FullName"]);
+                            string phoneNumber = String.Format("{0}", reader["PhoneNumber"]);
+                            string address = String.Format("{0}", reader["Address"]);
+                            DateOnly birthDate = DateOnly.FromDateTime(Convert.ToDateTime(String.Format("{0}", reader["BirthDate"])));
+                            bool kidReader = Convert.ToBoolean(String.Format("{0}", reader["KidReader"]));
+
+                            Patron newPatron = new Patron(patronID, cardNumber, fullName, phoneNumber, address, birthDate, kidReader);                              
+
+                            list.Add(newPatron);
                         }
                     }
                     finally
@@ -543,8 +620,11 @@ namespace LibraryDatabase
         /// <param name="e"></param>
         private void Grid_IsEnabledChanged(object sender, DependencyPropertyChangedEventArgs e)
         {
-            BookList = GetBookList();
-            LibraryListView.ItemsSource = BookList;
+            SetItemSources();
         }
+
+        #region PatronListView
+
+        #endregion
     }
 }
