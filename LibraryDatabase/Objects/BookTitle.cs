@@ -8,10 +8,14 @@ namespace LibraryDatabase.Objects
 {
     public class BookTitle
     {
+        /// <summary>
+        /// The books title id
+        /// </summary>
         public int BookTitleID { get; }
+        public string AuthorsName { get; }
         public int AudienceID { get; }
         public int GenreID { get; }
-        public int ISBN { get; }
+        public string ISBN { get; }
         public string Title { get; }
         public string Publisher { get; }
         public DateOnly PublishDate { get; }
@@ -19,9 +23,11 @@ namespace LibraryDatabase.Objects
         public GenreEnum Genre { get { return (GenreEnum)GenreID; } }
         public string DateString { get { return PublishDate.ToString(); } }
 
-        public BookTitle(int bookTitleID, int audienceID, int genreID, int isbn, string title, string publisher, DateOnly publishDate)
+
+        public BookTitle(int bookTitleID, string authName, int audienceID, int genreID, string isbn, string title, string publisher, DateOnly publishDate)
         {
             BookTitleID = bookTitleID;
+            AuthorsName = authName;
             AudienceID = audienceID;
             GenreID = genreID;
             ISBN = isbn;
@@ -29,5 +35,6 @@ namespace LibraryDatabase.Objects
             Publisher = publisher;
             PublishDate = publishDate;
         }
+
     }
 }

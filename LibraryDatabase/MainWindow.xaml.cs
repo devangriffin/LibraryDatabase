@@ -18,6 +18,8 @@ using LibraryDatabase.Objects;
 using static System.Reflection.Metadata.BlobBuilder;
 using System.Security.Policy;
 using System.Xml.Linq;
+using System.Reflection.Emit;
+using static Azure.Core.HttpHeader;
 
 namespace LibraryDatabase
 {
@@ -26,6 +28,7 @@ namespace LibraryDatabase
     /// </summary>
     public partial class MainWindow : Window
     {
+        private List<BookTitle> BookList;
         // private List<BookTitle> BookList;
         // private List<Patron> PatronList;
         /// <summary>
@@ -84,6 +87,7 @@ namespace LibraryDatabase
             IsEnabled = false;
         }
 
+      
         private void PatronListButton_Click(object sender, RoutedEventArgs e)
         {
             DisableOtherViews(PatronListView, PatronListButton);
@@ -128,13 +132,6 @@ namespace LibraryDatabase
             }
         }
 
-        public void PopulateData()
-        {
-            //AudienceColumn.DisplayMemberBinding = "GenreID";
-            //BookList = GetBooks();
-            //LibraryDataGrid.ItemsSource = BookList;
-        }
-
         #region InsertMethods (Moved)
 
         /// <summary>
@@ -147,7 +144,7 @@ namespace LibraryDatabase
         /// <param name="publishDate">the day the book was published in year-month-day like "2015-01-24"</param>
         /// <param name="publisher">The name of the publisher</param>
         /// <param name="readerType">The books target Audience</param>
-        private void InsertBook(string authorsName, int genreName, int isbn, string title, string publishDate, string publisher, int audienceType)
+        private void InsertBook(string authorsName, int genreName, string isbn, string title, string publishDate, string publisher, int audienceType)
         {
             int authID = 0;
             bool exists = false;
@@ -258,7 +255,7 @@ namespace LibraryDatabase
             {
                 using (SqlCommand command = connection.CreateCommand())
                 {
-                    command.CommandText = "INSERT INTO History (BookCopyID, CheckedOutDate, CheckedInDate) VALUES('0', '2000-01-01 05:30:00', '2000-01-01 05:30:00')";
+                    command.CommandText = "INSERT INTO History (BookCopyID, CheckedOutDate, CheckedInDate) VALUES('1', '2000-01-01 05:30:00', '2000-01-01 05:30:00')";
                     connection.Open();
                     command.ExecuteNonQuery();
 
@@ -450,7 +447,7 @@ namespace LibraryDatabase
             {
                 using (SqlCommand command = connection.CreateCommand())
                 {
-                    command.CommandText = "SELECT BookTitleID, Title FROM [LibraryDB].[BookTitle]";
+                    command.CommandText = "SELECT BookTitleID, Title, AudienceID, GenreID, ISBN, PublishDate, Publisher  FROM [LibraryDB].[BookTitle] ORDER BY Title ASC";
                     connection.Open();
                     SqlDataReader reader = command.ExecuteReader();
                     try
@@ -461,6 +458,8 @@ namespace LibraryDatabase
                             if (!(form.Equals("Test")))
                             {
                                 books.Add(form);
+                                //form = String.Format("{0}", reader["GenreID"]);
+
                             }
 
 
@@ -476,7 +475,13 @@ namespace LibraryDatabase
             }
             return books;
         }
+        
 
+
+        /// <summary>
+        /// Gets the bookList
+        /// </summary>
+        /// <returns>The book list</returns>
         private List<BookTitle> GetBookList()
         {
             List<BookTitle> list = new List<BookTitle>();
@@ -484,13 +489,14 @@ namespace LibraryDatabase
             {
                 using (SqlCommand command = connection.CreateCommand())
                 {
-                    command.CommandText = "SELECT * FROM [LibraryDB].[BookTitle]";
+                    command.CommandText = "SELECT * FROM [LibraryDB].[BookTitle] ORDER BY Title ASC";
                     connection.Open();
                     SqlDataReader reader = command.ExecuteReader();
                     try
                     {
                         while (reader.Read())
                         {
+                            
                             string bookTitleID = String.Format("{0}", reader["BookTitleID"]);
                             string title = String.Format("{0}", reader["Title"]);
                             string authorID = String.Format("{0}", reader["AuthorID"]);
@@ -499,11 +505,14 @@ namespace LibraryDatabase
                             string publisher = String.Format("{0}", reader["Publisher"]);
                             string audienceID = String.Format("{0}", reader["AudienceID"]);
                             string genreID = String.Format("{0}", reader["GenreID"]);
+                            if (!(title.Equals("Test")))
+                            {
+                                string aName = GetAuthor(Convert.ToInt32(authorID));
+                                BookTitle newBook = new BookTitle(Convert.ToInt32(bookTitleID), aName, Convert.ToInt32(audienceID), Convert.ToInt32(genreID), isbn, title, publisher, DateOnly.FromDateTime(Convert.ToDateTime(publishDate)));
 
-                            BookTitle newBook = new BookTitle(Convert.ToInt32(bookTitleID), Convert.ToInt32(audienceID), Convert.ToInt32(genreID), Convert.ToInt32(isbn),
-                                title, publisher, DateOnly.FromDateTime(Convert.ToDateTime(publishDate)));
-
-                            list.Add(newBook);
+                                list.Add(newBook);
+                            }
+                            
                         }
                     }
                     finally
@@ -517,6 +526,48 @@ namespace LibraryDatabase
             return list;
         }
 
+        /// <summary>
+        /// formats the book list
+        /// </summary>
+        /// <param name="books"></param>
+        /// <returns></returns>
+        private string GetAuthor(int id)
+        {
+            string name = "";
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                using (SqlCommand command = connection.CreateCommand())
+                {
+                    command.CommandText = "SELECT AuthorID, FullName FROM [LibraryDB].[Author] WHERE AuthorID = " + id;
+                    connection.Open();
+                    SqlDataReader reader = command.ExecuteReader();
+                    try
+                    {
+                        while (reader.Read())
+                        {
+                            string form = String.Format("{0}", reader["AuthorID"]);
+                            if (form.Equals(id.ToString()))
+                            {
+                                form = String.Format("{0}", reader["FullName"]);
+                                name = form;
+                            }
+
+
+
+                        }
+                    }
+                    finally
+                    {
+                        reader.Close();
+                    }
+
+                    connection.Close();
+                }
+             }
+             
+             return name;
+         }
+             
         private List<Patron> GetPatronList()
         {
             List<Patron> list = new List<Patron>();
@@ -604,7 +655,7 @@ namespace LibraryDatabase
             {
                 using (SqlCommand command = connection.CreateCommand())
                 {
-                    command.CommandText = "SELECT BookTitleID, Title FROM [LibraryDB].[BookTitle] WHERE Title = " + name + "'";
+                    command.CommandText = "SELECT BookTitleID, Title FROM [LibraryDB].[BookTitle] WHERE Title = '" + name + "'";
                     connection.Open();
                     SqlDataReader reader = command.ExecuteReader();
                     try

@@ -19,8 +19,8 @@
         <ListView x:Name="LibraryListView" Margin="10" Grid.Row="1" Visibility="Visible" IsEnabled="True">
             <ListView.View>
                 <GridView>
-                    <GridViewColumn x:Name="TitleColumn" DisplayMemberBinding="{Binding Path=Title}" Header="Book Title" Width="260"/>
-                    <GridViewColumn x:Name="AuthorColumn" DisplayMemberBinding="{Binding Path=AuthorID}" Header="Author" Width="200"/>
+                    <GridViewColumn x:Name="TitleColumn" DisplayMemberBinding="{Binding Path=Title}" Header="Book Title" Width="265"/>
+                    <GridViewColumn x:Name="AuthorColumn" DisplayMemberBinding="{Binding Path=AuthorsName}" Header="Author" Width="200"/> 
                     <GridViewColumn x:Name="ISBNColumn" DisplayMemberBinding="{Binding Path=ISBN}" Header="ISBN" Width="100"/>
                     <GridViewColumn x:Name="PublishDateColumn" DisplayMemberBinding="{Binding Path=DateString}" Header="Publish Date" Width="100"/>
                     <GridViewColumn x:Name="PublisherColumn" DisplayMemberBinding="{Binding Path=Publisher}" Header="Publisher" Width="100"/>
