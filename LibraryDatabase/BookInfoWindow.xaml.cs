@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Data.SqlClient;
+using Microsoft.Data.SqlClient;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -23,12 +23,12 @@ namespace LibraryDatabase
     public partial class BookInfoWindow : Window
     {
         BookTitle Book;
-        Window ParentWindow;
+        AddWindow ParentWindow;
 
-        private string connectionString = "Data Source=.;Initial Catalog=LibraryDB;Integrated Security=True;MultipleActiveResultSets=True";
+        private string connectionString = @"Data Source=(localdb)\MSSQLLocalDb;Initial Catalog= LibraryDB;Integrated Security=SSPI;";
 
 
-        public BookInfoWindow(BookTitle book, Window parentWindow)
+        public BookInfoWindow(BookTitle book, AddWindow parentWindow)
         {
             Book = book;
             ParentWindow = parentWindow;
@@ -42,7 +42,7 @@ namespace LibraryDatabase
         public void InitializeTextBlocks()
         {
             BookTitleBlock.Text = Book.Title;
-            BookAuthorBlock.Text = "[PlaceHolder]";
+            BookAuthorBlock.Text = ParentWindow.GetAuthor();
             BookISBNBlock.Text = Book.ISBN.ToString();
             BookPublisherBlock.Text = Book.Publisher;
             BookPublishDateBlock.Text = Book.PublishDate.ToString();
@@ -58,7 +58,7 @@ namespace LibraryDatabase
 
         private void ConfirmButton_Click(object sender, RoutedEventArgs e)
         {
-            InsertBook(BookAuthorBlock.Text, Book.GenreID, Book.ISBN, Book.Title, Book.PublishDate.ToString(), Book.Publisher, Book.AudienceID);
+            InsertBook(ParentWindow.GetAuthor(), Book.GenreID, Book.ISBN, Book.Title, Book.PublishDate.ToString(), Book.Publisher, Book.AudienceID);
             ParentWindow.Close();
             Close();
         }
@@ -123,12 +123,12 @@ namespace LibraryDatabase
                 {
                     using (SqlCommand command = connection.CreateCommand())
                     {
-                        command.CommandText = "INSERT INTO Author (FullName) VALUES('" + authorsName + "')";
+                        command.CommandText = "INSERT INTO [LibraryDB].[Author](FullName) VALUES('" + authorsName + "')";
 
                         connection.Open();
                         command.ExecuteNonQuery();
 
-                        command.CommandText = "SELECT AuthorID, FullName FROM [LibraryDB].[Author] WHERE FullName = " + authorsName;
+                        command.CommandText = "SELECT AuthorID, FullName FROM [LibraryDB].[Author] WHERE FullName = '" + authorsName + "'";
                         SqlDataReader reader = command.ExecuteReader();
                         try
                         {
@@ -151,7 +151,7 @@ namespace LibraryDatabase
             {
                 using (SqlCommand command = connection.CreateCommand())
                 {
-                    command.CommandText = "INSERT INTO BookTitle (AuthorID, AudienceID, GenreID, ISBN, Title, PublishDate, Publisher) " +
+                    command.CommandText = "INSERT INTO [LibraryDB].[BookTitle](AuthorID, AudienceID, GenreID, ISBN, Title, PublishDate, Publisher) " +
                         "VALUES('" + authID + "', '" + audienceType + "', '" + genreName + "','" + isbn + "', '" + title + "', '" + publishDate + "', '" + publisher + "')";
 
                     connection.Open();
