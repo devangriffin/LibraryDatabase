@@ -6,29 +6,21 @@
         xmlns:local="clr-namespace:LibraryDatabase"
         mc:Ignorable="d"
         Title="MainWindow" Height="600" Width="1000">
-    <Grid IsEnabledChanged="Grid_IsEnabledChanged">
+    <Grid x:Name="LibraryGrid" IsEnabledChanged="Grid_IsEnabledChanged">
         <Grid.RowDefinitions>
             <RowDefinition/>
             <RowDefinition Height="5*"/>
             <RowDefinition/>
         </Grid.RowDefinitions>
-        
-        <TextBlock Text="Library Database" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="32"/>
-        <!-- <ListView x:Name="TheBooks" Margin="10" Grid.Row="1"/> -->
-        
-        <!-- 
-        <DataGrid x:Name="LibraryDataGrid" Margin="10" Grid.Row="1">
-            <DataGrid.Columns>
-                <DataGridTextColumn Header="Book Title"/>
-            </DataGrid.Columns>
-        </DataGrid>
-        -->
 
-        <ListView x:Name="LibraryListView" Margin="10" Grid.Row="1">
+        <TextBlock Text="Library Database" VerticalAlignment="Top" HorizontalAlignment="Center" FontSize="32"/>
+        <!-- <ListView x:Name="TheBooks" Margin="10" Grid.Row="1"/> -->
+
+        <ListView x:Name="LibraryListView" Margin="10" Grid.Row="1" Visibility="Visible" IsEnabled="True">
             <ListView.View>
                 <GridView>
                     <GridViewColumn x:Name="TitleColumn" DisplayMemberBinding="{Binding Path=Title}" Header="Book Title" Width="265"/>
-                    <GridViewColumn x:Name="AuthorColumn" DisplayMemberBinding="{Binding Path=AuthorsName}" Header="Author" Width="200"/>
+                    <GridViewColumn x:Name="AuthorColumn" DisplayMemberBinding="{Binding Path=AuthorsName}" Header="Author" Width="200"/> 
                     <GridViewColumn x:Name="ISBNColumn" DisplayMemberBinding="{Binding Path=ISBN}" Header="ISBN" Width="100"/>
                     <GridViewColumn x:Name="PublishDateColumn" DisplayMemberBinding="{Binding Path=DateString}" Header="Publish Date" Width="100"/>
                     <GridViewColumn x:Name="PublisherColumn" DisplayMemberBinding="{Binding Path=Publisher}" Header="Publisher" Width="100"/>
@@ -37,9 +29,36 @@
                 </GridView>
             </ListView.View>
         </ListView>
+
+        <ListView x:Name="PatronListView" Margin="10" Grid.Row="1" Visibility="Collapsed" IsEnabled="False">
+            <ListView.View>
+                <GridView>
+                    <GridViewColumn x:Name="NameColumn" DisplayMemberBinding="{Binding Path=Name}" Header="Name" Width="200"/>
+                    <GridViewColumn x:Name="CardNumberColumn" DisplayMemberBinding="{Binding Path=CardNumber}" Header="Card Number" Width="160"/>
+                    <GridViewColumn x:Name="AddressColumn" DisplayMemberBinding="{Binding Path=Address}" Header="Address" Width="200"/>
+                    <GridViewColumn x:Name="BirthDateColumn" DisplayMemberBinding="{Binding Path=BirthDate}" Header="Birth Date" Width="100"/>
+                    <GridViewColumn x:Name="KidReaderColumn" DisplayMemberBinding="{Binding Path=KidReader}" Header="Kid Reader" Width="100"/>
+                </GridView>
+            </ListView.View>
+        </ListView>
+
         
+        <ListView x:Name="GenreCountListView" Margin="10" Grid.Row="1" Visibility="Collapsed" IsEnabled="False">
+            <ListView.View>
+                <GridView>
+                    <GridViewColumn x:Name="GenreNameColumn" DisplayMemberBinding="{Binding Path=Key}" Header="Genre" Width="100"/>
+                    <GridViewColumn x:Name="GenreCountColumn" DisplayMemberBinding="{Binding Path=Value}" Header="Count" Width="100"/>
+                </GridView>
+            </ListView.View>
+        </ListView>
+        
+        <!-- Buttons -->
         <Button x:Name="AddButton" Content="Add Book" HorizontalAlignment="Left" Width="100" Height="32" Grid.Row="2" Margin="20" Click="AddButton_Click"/>
         <Button x:Name="CheckoutButton" Content="Checkout Book" HorizontalAlignment="Right" Width="100" Height="32" Grid.Row="2" Margin="20"/>
         <Button x:Name="AddPatronButton" Content="Add Patron" HorizontalAlignment="Left" Width="100" Height="32" Grid.Row="2" Margin="160, 0, 0, 0" Click="AddPatronButton_Click"/>
+        <Button x:Name="BookListButton" Content="Book List" Width="100" Height="24" VerticalAlignment="Bottom" HorizontalAlignment="Left" Margin="20, 0" IsEnabled="False" Click="BookListButton_Click"/>
+        <Button x:Name="PatronListButton" Content="Patron List" Width="100" Height="24" Margin="140, 0" HorizontalAlignment="Left" VerticalAlignment="Bottom" Click="PatronListButton_Click"/>
+        <Button x:Name="GenreCountButton" Content="Genre Count" Width="100" Height="24" Margin="260, 0" HorizontalAlignment="Left" VerticalAlignment="Bottom" Click="GenreCountButton_Click"/>
+
     </Grid>
 </Window>

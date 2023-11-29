@@ -29,8 +29,8 @@ namespace LibraryDatabase
     public partial class MainWindow : Window
     {
         private List<BookTitle> BookList;
-
-
+        // private List<BookTitle> BookList;
+        // private List<Patron> PatronList;
         /// <summary>
         /// used anytime we need to connect to the database and interface with any of the information
         /// </summary>
@@ -51,9 +51,14 @@ namespace LibraryDatabase
         {
             InitializeComponent();
 
-            BookList = new List<BookTitle>();
-            BookList = GetBookList();
-            LibraryListView.ItemsSource = BookList;
+            SetItemSources();
+        }
+
+        private void SetItemSources()
+        {
+            LibraryListView.ItemsSource = GetBookList();
+            PatronListView.ItemsSource = GetPatronList();
+            GenreCountListView.ItemsSource = GetGenreCounts();
         }
 
         /// <summary>
@@ -82,14 +87,52 @@ namespace LibraryDatabase
             IsEnabled = false;
         }
 
-        /*
-        public void PopulateData()
+      
+        private void PatronListButton_Click(object sender, RoutedEventArgs e)
         {
-            //AudienceColumn.DisplayMemberBinding = "GenreID";
-            //BookList = GetBooks();
-            //LibraryDataGrid.ItemsSource = BookList;
+            DisableOtherViews(PatronListView, PatronListButton);
+            SetItemSources();
         }
-        */
+
+        private void BookListButton_Click(object sender, RoutedEventArgs e)
+        {
+            DisableOtherViews(LibraryListView, BookListButton);
+            SetItemSources();
+        }
+
+        private void GenreCountButton_Click(object sender, RoutedEventArgs e)
+        {
+            DisableOtherViews(GenreCountListView, GenreCountButton);
+            SetItemSources();
+        }
+
+        private void DisableOtherViews(ListView listView, Button button)
+        {
+            foreach (UIElement element in LibraryGrid.Children)
+            {
+                if (element is Button button2)
+                {
+                    if (button.Name == button2.Name) { button.IsEnabled = false; }
+                    else { button2.IsEnabled = true; }
+                }
+
+                if (element is ListView listView2)
+                {
+                    if (listView.Name == listView2.Name)
+                    {
+                        listView.IsEnabled = true;
+                        listView.Visibility = Visibility.Visible;
+                    }
+                    else
+                    {
+                        listView2.IsEnabled = false;
+                        listView2.Visibility = Visibility.Collapsed;
+                    }
+                }
+            }
+        }
+
+        #region InsertMethods (Moved)
 
         /// <summary>
         /// Inserts a book into the database along with a new author and the books audiance
@@ -212,7 +255,7 @@ namespace LibraryDatabase
             {
                 using (SqlCommand command = connection.CreateCommand())
                 {
-                    command.CommandText = "INSERT INTO History (BookCopyID, CheckedOutDate, CheckedInDate) VALUES('0', '2000-01-01 05:30:00', '2000-01-01 05:30:00')";
+                    command.CommandText = "INSERT INTO History (BookCopyID, CheckedOutDate, CheckedInDate) VALUES('1', '2000-01-01 05:30:00', '2000-01-01 05:30:00')";
                     connection.Open();
                     command.ExecuteNonQuery();
 
@@ -259,6 +302,9 @@ namespace LibraryDatabase
             }
         }
 
+        #endregion
+
+        #region InsertGenre/Audience (Removed)
         /// <summary>
         /// Inserts a Genre into the database
         /// </summary>
@@ -388,7 +434,8 @@ namespace LibraryDatabase
             return inserted;
         }
 
-        /*
+        #endregion
+
         /// <summary>
         /// gets a list of all books from the database
         /// </summary>
@@ -428,7 +475,7 @@ namespace LibraryDatabase
             }
             return books;
         }
-        */
+        
 
 
         /// <summary>
@@ -479,8 +526,6 @@ namespace LibraryDatabase
             return list;
         }
 
-
-
         /// <summary>
         /// formats the book list
         /// </summary>
@@ -518,11 +563,85 @@ namespace LibraryDatabase
 
                     connection.Close();
                 }
-            }
+             }
+             
+             return name;
+         }
+             
+        private List<Patron> GetPatronList()
+        {
+            List<Patron> list = new List<Patron>();
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                using (SqlCommand command = connection.CreateCommand())
+                {
+                    command.CommandText = "SELECT * FROM [LibraryDB].[Patron]";
+                    connection.Open();
+                    SqlDataReader reader = command.ExecuteReader();
+                    try
+                    {
+                        while (reader.Read())
+                        {
+                            int patronID = Convert.ToInt32(String.Format("{0}", reader["PatronID"]));
+                            int cardNumber = Convert.ToInt32(String.Format("{0}", reader["CardNumber"]));
+                            string fullName = String.Format("{0}", reader["FullName"]);
+                            string phoneNumber = String.Format("{0}", reader["PhoneNumber"]);
+                            string address = String.Format("{0}", reader["Address"]);
+                            DateOnly birthDate = DateOnly.FromDateTime(Convert.ToDateTime(String.Format("{0}", reader["BirthDate"])));
+                            bool kidReader = Convert.ToBoolean(String.Format("{0}", reader["KidReader"]));
 
-            return name;
+                            Patron newPatron = new Patron(patronID, cardNumber, fullName, phoneNumber, address, birthDate, kidReader);                              
+
+                            list.Add(newPatron);
+                        }
+                    }
+                    finally
+                    {
+                        reader.Close();
+                    }
+
+                    connection.Close();
+                }
+            }
+            return list;
         }
 
+        private List<KeyValuePair<string, int>> GetGenreCounts()
+        {
+            List<KeyValuePair<string, int>> list = new List<KeyValuePair<string, int>>();
+
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                using (SqlCommand command = connection.CreateCommand())
+                {
+                    command.CommandText =   "SELECT G.GenreName, COUNT(BT.BookTitleID) AS BookCount\r\n" +
+                                            "FROM LibraryDB.Genre G\r\n" +
+                                            "LEFT JOIN LibraryDB.BookTitle BT ON BT.GenreID = G.GenreID\r\n" +
+                                            "GROUP BY G.GenreName\r\n" +
+                                            "ORDER BY G.GenreName;";
+                    connection.Open();
+                    SqlDataReader reader = command.ExecuteReader();
+                    try
+                    {
+                        while (reader.Read())
+                        {
+                            string genreName = (String.Format("{0}", reader["GenreName"]));
+                            int bookCount = Convert.ToInt32(String.Format("{0}", reader["BookCount"]));
+
+                            list.Add(new KeyValuePair<string, int>(genreName, bookCount));
+                        }
+                    }
+                    finally
+                    {
+                        reader.Close();
+                    }
+
+                    connection.Close();
+                }
+            }
+           
+            return list;
+        }
 
         /// <summary>
         /// gets a list of books from the database with set search parameters TODO
@@ -606,8 +725,11 @@ namespace LibraryDatabase
         /// <param name="e"></param>
         private void Grid_IsEnabledChanged(object sender, DependencyPropertyChangedEventArgs e)
         {
-            BookList = GetBookList();
-            LibraryListView.ItemsSource = BookList;
+            SetItemSources();
         }
+
+        #region PatronListView
+
+        #endregion
     }
 }

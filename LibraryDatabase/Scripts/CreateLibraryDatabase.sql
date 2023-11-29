@@ -38,7 +38,7 @@ CREATE TABLE LibraryDB.Genre
 CREATE TABLE LibraryDB.BookTitle
 (
 	BookTitleID INT IDENTITY NOT NULL PRIMARY KEY,
-	AuthorID INT  NOT NULL FOREIGN KEY
+	AuthorID INT NOT NULL FOREIGN KEY
 		REFERENCES LibraryDB.Author(AuthorID), 
 	AudienceID INT NOT NULL FOREIGN KEY
 		REFERENCES LibraryDB.Audience(AudienceID),
@@ -89,6 +89,3 @@ CREATE TABLE LibraryDB.Patron
 	BirthDate DATE NOT NULL,
 	KidReader BIT NOT NULL
 );
-
-SELECT *
-FROM LibraryDB.Author
