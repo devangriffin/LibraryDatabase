@@ -73,7 +73,7 @@ namespace LibraryDatabase
         /// <param name="publishDate">the day the book was published in year-month-day like "2015-01-24"</param>
         /// <param name="publisher">The name of the publisher</param>
         /// <param name="readerType">The books target Audience</param>
-        private void InsertBook(string authorsName, int genreName, int isbn, string title, string publishDate, string publisher, int audienceType)
+        private void InsertBook(string authorsName, int genreName, string isbn, string title, string publishDate, string publisher, int audienceType)
         {
             int authID = 0;
             bool exists = false;

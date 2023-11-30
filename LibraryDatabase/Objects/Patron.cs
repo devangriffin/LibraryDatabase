@@ -10,14 +10,14 @@ namespace LibraryDatabase.Objects
     {
         public int PatronID { get; }
         public int LoanID { get; }
-        public int CardNumber { get; }
+        public string CardNumber { get; }
         public string Name { get; }
         public string PhoneNumber { get; }
         public string Address { get; }
         public DateOnly BirthDate { get; }
         public bool KidReader { get; }
 
-        public Patron(int patronID, int cardNum, string name, string phoneNum, string add, DateOnly birthDate, bool kid)
+        public Patron(int patronID, string cardNum, string name, string phoneNum, string add, DateOnly birthDate, bool kid)
         {
             PatronID = patronID;
             CardNumber = cardNum;

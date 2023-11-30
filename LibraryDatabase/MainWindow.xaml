@@ -19,13 +19,14 @@
         <ListView x:Name="LibraryListView" Margin="10" Grid.Row="1" Visibility="Visible" IsEnabled="True">
             <ListView.View>
                 <GridView>
-                    <GridViewColumn x:Name="TitleColumn" DisplayMemberBinding="{Binding Path=Title}" Header="Book Title" Width="260"/>
-                    <GridViewColumn x:Name="AuthorColumn" DisplayMemberBinding="{Binding Path=AuthorID}" Header="Author" Width="200"/>
+                    <GridViewColumn x:Name="TitleColumn" DisplayMemberBinding="{Binding Path=Title}" Header="Book Title" Width="220"/>
+                    <GridViewColumn x:Name="AuthorColumn" DisplayMemberBinding="{Binding Path=AuthorID}" Header="Author" Width="180"/>
                     <GridViewColumn x:Name="ISBNColumn" DisplayMemberBinding="{Binding Path=ISBN}" Header="ISBN" Width="100"/>
                     <GridViewColumn x:Name="PublishDateColumn" DisplayMemberBinding="{Binding Path=DateString}" Header="Publish Date" Width="100"/>
                     <GridViewColumn x:Name="PublisherColumn" DisplayMemberBinding="{Binding Path=Publisher}" Header="Publisher" Width="100"/>
-                    <GridViewColumn x:Name="AudienceColumn" DisplayMemberBinding="{Binding Path=Audience}" Header="Audience" Width="100"/>
+                    <GridViewColumn x:Name="AudienceColumn" DisplayMemberBinding="{Binding Path=Audience}" Header="Audience" Width="80"/>
                     <GridViewColumn x:Name="GenreColumn" DisplayMemberBinding="{Binding Path=Genre}" Header="Genre" Width="100"/>
+                    <GridViewColumn x:Name="CheckedOutColumn" DisplayMemberBinding="{Binding Path=IsCheckedOut}" Header="Checked Out" Width="80"/>
                 </GridView>
             </ListView.View>
         </ListView>
@@ -41,8 +42,7 @@
                 </GridView>
             </ListView.View>
         </ListView>
-
-        
+ 
         <ListView x:Name="GenreCountListView" Margin="10" Grid.Row="1" Visibility="Collapsed" IsEnabled="False">
             <ListView.View>
                 <GridView>
@@ -54,7 +54,7 @@
         
         <!-- Buttons -->
         <Button x:Name="AddButton" Content="Add Book" HorizontalAlignment="Left" Width="100" Height="32" Grid.Row="2" Margin="20" Click="AddButton_Click"/>
-        <Button x:Name="CheckoutButton" Content="Checkout Book" HorizontalAlignment="Right" Width="100" Height="32" Grid.Row="2" Margin="20"/>
+        <Button x:Name="CheckoutButton" Content="Checkout Book" HorizontalAlignment="Right" Width="100" Height="32" Grid.Row="2" Margin="20" Click="CheckoutButton_Click"/>
         <Button x:Name="AddPatronButton" Content="Add Patron" HorizontalAlignment="Left" Width="100" Height="32" Grid.Row="2" Margin="160, 0, 0, 0" Click="AddPatronButton_Click"/>
         <Button x:Name="BookListButton" Content="Book List" Width="100" Height="24" VerticalAlignment="Bottom" HorizontalAlignment="Left" Margin="20, 0" IsEnabled="False" Click="BookListButton_Click"/>
         <Button x:Name="PatronListButton" Content="Patron List" Width="100" Height="24" Margin="140, 0" HorizontalAlignment="Left" VerticalAlignment="Bottom" Click="PatronListButton_Click"/>

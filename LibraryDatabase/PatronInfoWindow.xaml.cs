@@ -74,7 +74,7 @@ namespace LibraryDatabase
         /// <param name="address">the individuals address</param>
         /// <param name="dateofBirth">the individuals Date of birth</param>
         /// <param name="isKid">Whether or not the patron is a kid</param>
-        private void InsertPatron(int cardNum, string name, string phoneNum, string address, string dateofBirth, bool isKid)
+        private void InsertPatron(string cardNum, string name, string phoneNum, string address, string dateofBirth, bool isKid)
         {
             int histID = 0;
 

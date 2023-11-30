@@ -11,15 +11,16 @@ namespace LibraryDatabase.Objects
         public int BookTitleID { get; }
         public int AudienceID { get; }
         public int GenreID { get; }
-        public int ISBN { get; }
+        public string ISBN { get; }
         public string Title { get; }
         public string Publisher { get; }
         public DateOnly PublishDate { get; }
         public AudienceEnum Audience { get { return (AudienceEnum)AudienceID; } }
         public GenreEnum Genre { get { return (GenreEnum)GenreID; } }
         public string DateString { get { return PublishDate.ToString(); } }
+        public bool IsCheckedOut { get; set; }
 
-        public BookTitle(int bookTitleID, int audienceID, int genreID, int isbn, string title, string publisher, DateOnly publishDate)
+        public BookTitle(int bookTitleID, int audienceID, int genreID, string isbn, string title, string publisher, DateOnly publishDate)
         {
             BookTitleID = bookTitleID;
             AudienceID = audienceID;
@@ -28,6 +29,7 @@ namespace LibraryDatabase.Objects
             Title = title;
             Publisher = publisher;
             PublishDate = publishDate;
+            IsCheckedOut = false;
         }
     }
 }
