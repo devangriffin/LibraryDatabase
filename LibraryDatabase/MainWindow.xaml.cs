@@ -20,6 +20,7 @@ using System.Security.Policy;
 using System.Xml.Linq;
 using System.Reflection.Emit;
 using static Azure.Core.HttpHeader;
+using System.IO;
 
 namespace LibraryDatabase
 {
@@ -437,48 +438,6 @@ namespace LibraryDatabase
         #endregion
 
         /// <summary>
-        /// gets a list of all books from the database
-        /// </summary>
-        /// <returns> a list of all book titles in the library</returns>
-        private List<string> GetBooks()
-        {
-            List<string> books = new List<string>();
-            using (SqlConnection connection = new SqlConnection(connectionString))
-            {
-                using (SqlCommand command = connection.CreateCommand())
-                {
-                    command.CommandText = "SELECT BookTitleID, Title, AudienceID, GenreID, ISBN, PublishDate, Publisher  FROM [LibraryDB].[BookTitle] ORDER BY Title ASC";
-                    connection.Open();
-                    SqlDataReader reader = command.ExecuteReader();
-                    try
-                    {
-                        while (reader.Read())
-                        {
-                            string form = String.Format("{0}", reader["Title"]);
-                            if (!(form.Equals("Test")))
-                            {
-                                books.Add(form);
-                                //form = String.Format("{0}", reader["GenreID"]);
-
-                            }
-
-
-                        }
-                    }
-                    finally
-                    {
-                        reader.Close();
-                    }
-
-                    connection.Close();
-                }
-            }
-            return books;
-        }
-        
-
-
-        /// <summary>
         /// Gets the bookList
         /// </summary>
         /// <returns>The book list</returns>
@@ -614,11 +573,12 @@ namespace LibraryDatabase
             {
                 using (SqlCommand command = connection.CreateCommand())
                 {
-                    command.CommandText =   "SELECT G.GenreName, COUNT(BT.BookTitleID) AS BookCount\r\n" +
-                                            "FROM LibraryDB.Genre G\r\n" +
-                                            "LEFT JOIN LibraryDB.BookTitle BT ON BT.GenreID = G.GenreID\r\n" +
-                                            "GROUP BY G.GenreName\r\n" +
-                                            "ORDER BY G.GenreName;";
+                    string userName = Environment.UserName;
+                    FileInfo file = new FileInfo(@"C:\Users\" + userName + @"\source\repos\LibraryDatabase\LibraryDatabase\Scripts\GenreCount.sql");
+                    string script = file.OpenText().ReadToEnd();
+
+                    command.CommandText = script;
+
                     connection.Open();
                     SqlDataReader reader = command.ExecuteReader();
                     try
@@ -641,81 +601,6 @@ namespace LibraryDatabase
             }
            
             return list;
-        }
-
-        /// <summary>
-        /// gets a list of books from the database with set search parameters TODO
-        /// </summary>
-        /// <param name="name">the books title</param>
-        /// <returns> a list of all book titles in the library</returns>
-        private List<string> GetBook(string name)
-        {
-            List<string> books = new List<string>();
-            using (SqlConnection connection = new SqlConnection(connectionString))
-            {
-                using (SqlCommand command = connection.CreateCommand())
-                {
-                    command.CommandText = "SELECT BookTitleID, Title FROM [LibraryDB].[BookTitle] WHERE Title = '" + name + "'";
-                    connection.Open();
-                    SqlDataReader reader = command.ExecuteReader();
-                    try
-                    {
-                        while (reader.Read())
-                        {
-                            string form = String.Format("{0}", reader["Title"]);
-                            if (form.Equals(name))
-                            {
-                                form = String.Format("{0}", reader["Title"]);
-                                books.Add(form);
-                            }
-
-
-
-                        }
-                    }
-                    finally
-                    {
-                        reader.Close();
-                    }
-
-                    connection.Close();
-                }
-            }
-            return books;
-        }
-
-        /// <summary>
-        /// gets a list of patrons from the database
-        /// </summary>
-        /// <returns>a list of patrons</returns>
-        private List<string> GetPatrons()
-        {
-            List<string> patrons = new List<string>();
-            using (SqlConnection connection = new SqlConnection(connectionString))
-            {
-                using (SqlCommand command = connection.CreateCommand())
-                {
-                    command.CommandText = "SELECT PatronID, [FullName] FROM [LibraryDB].[Patron]";
-                    connection.Open();
-                    SqlDataReader reader = command.ExecuteReader();
-                    try
-                    {
-                        while (reader.Read())
-                        {
-                            string form = String.Format("{0}", reader["[FullName]"]);
-                            patrons.Add(form);
-
-                        }
-                    }
-                    finally
-                    {
-                        reader.Close();
-                    }
-
-                    connection.Close();
-                }
-            }
-            return patrons;
         }
 
         /// <summary>
