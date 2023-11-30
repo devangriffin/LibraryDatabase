@@ -5,11 +5,11 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:LibraryDatabase"
         mc:Ignorable="d"
-        Title="AddAuthor" Height="300" Width="400">
-    <Grid>
+        Title="CheckOutBook" Height="300" Width="700">
+    <Grid RenderTransformOrigin="0.188,0.261">
         <Grid.ColumnDefinitions>
-            <ColumnDefinition/>
-            <ColumnDefinition Width="2*"/>
+            <ColumnDefinition Width="27*"/>
+            <ColumnDefinition Width="113*"/>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition/>
@@ -20,5 +20,22 @@
             <RowDefinition/>
             <RowDefinition/>
         </Grid.RowDefinitions>
+        <Button x:Name="CancelButton" Content="Cancel" Grid.Row="6" Margin="5,5,5,10" Click="CancelButton_Click"/>
+        <Button x:Name="AddButton" Content="CheckOut" Grid.Column="1" Grid.Row="6" Margin="5,5,5,10" Click="AddButton_Click"/>
+        <TextBlock Text="Title: "  FontSize="20" Width="62" HorizontalAlignment="Left" TextAlignment="Right" Margin="42,-1,0,11"/>
+        <TextBlock Text="Author: " FontSize="20" Width="80" HorizontalAlignment="Center" TextAlignment="Right" Margin="0,38,0,14" RenderTransformOrigin="1.693,3.598" Grid.RowSpan="2"/>
+        <TextBlock Text="ISBN: " FontSize="20" Grid.Row="3" Width="104" HorizontalAlignment="Left" TextAlignment="Right" Margin="0,38,0,11" Grid.RowSpan="2"/>
+        <TextBlock Text="Publisher: " FontSize="20" Grid.Row="5" Width="122" HorizontalAlignment="Center" TextAlignment="Right" Margin="0,0,0,6"/>
+        <TextBlock Text="Genre: " FontSize="20" Grid.Row="1" Width="100" HorizontalAlignment="Center" TextAlignment="Right" Margin="0,40,0,5" Grid.RowSpan="2"/>
+        <TextBlock Text="Audience: " FontSize="20" Grid.Row="3" Width="104" HorizontalAlignment="Left" TextAlignment="Right" Margin="0,0,0,2" RenderTransformOrigin="2.75,4.069"/>
+
+
+        <TextBlock x:Name="BookTitleBlock" FontSize="18" Grid.Row="0" Grid.Column="1" HorizontalAlignment="Center" TextAlignment="Left" Margin="0,0,0,40" Grid.RowSpan="2" Width="544"/>
+        <TextBlock x:Name="BookAuthorBlock" FontSize="18" Grid.Row="1" Grid.Column="1" HorizontalAlignment="Center" TextAlignment="Left" Width="544"/>
+        <TextBlock x:Name="BookGenreBlock" FontSize="18" Grid.Row="1" Grid.Column="1" HorizontalAlignment="Center" TextAlignment="Left" Margin="0,40,0,40" Grid.RowSpan="3" Width="544"/>
+        <TextBlock x:Name="BookISBNBlock" FontSize="18" Grid.Row="3" Grid.Column="1" HorizontalAlignment="Center" TextAlignment="Left" Margin="0,40,0,40" Grid.RowSpan="3" Width="544"/>
+        <TextBlock x:Name="BookPublisherBlock" FontSize="18" Grid.Row="5" Grid.Column="1" HorizontalAlignment="Center" TextAlignment="Left" Width="544"/>
+        <TextBlock x:Name="BookAudienceBlock" FontSize="18" Grid.Row="3" Grid.Column="1" HorizontalAlignment="Center" TextAlignment="Left" Width="544"/>
+
     </Grid>
 </Window>

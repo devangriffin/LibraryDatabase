@@ -24,6 +24,9 @@ namespace LibraryDatabase
     {
         private string connectionString = @"Data Source=(localdb)\MSSQLLocalDb;Initial Catalog= LibraryDB;Integrated Security=SSPI;";
 
+        /// <summary>
+        /// The Starting point for the application
+        /// </summary>
         public App()
         {
             string sqlConnectionString = @"Data Source=(localdb)\MSSQLLocalDb;Initial Catalog= LibraryDB;Integrated Security=SSPI;";

@@ -16,7 +16,7 @@
         <TextBlock Text="Library Database" VerticalAlignment="Top" HorizontalAlignment="Center" FontSize="32"/>
         <!-- <ListView x:Name="TheBooks" Margin="10" Grid.Row="1"/> -->
 
-        <ListView x:Name="LibraryListView" Margin="10" Grid.Row="1" Visibility="Visible" IsEnabled="True">
+        <ListView x:Name="LibraryListView" Margin="10" Grid.Row="1" Visibility="Visible" IsEnabled="True" SelectionChanged="LibraryListView_SelectionChanged">
             <ListView.View>
                 <GridView>
                     <GridViewColumn x:Name="TitleColumn" DisplayMemberBinding="{Binding Path=Title}" Header="Book Title" Width="265"/>
@@ -54,7 +54,7 @@
         
         <!-- Buttons -->
         <Button x:Name="AddButton" Content="Add Book" HorizontalAlignment="Left" Width="100" Height="32" Grid.Row="2" Margin="20" Click="AddButton_Click"/>
-        <Button x:Name="CheckoutButton" Content="Checkout Book" HorizontalAlignment="Right" Width="100" Height="32" Grid.Row="2" Margin="20"/>
+        <Button x:Name="CheckoutButton" Content="Checkout Book" HorizontalAlignment="Right" Width="100" Height="32" Grid.Row="2" Margin="20" Click="CheckoutButton_Click"/>
         <Button x:Name="AddPatronButton" Content="Add Patron" HorizontalAlignment="Left" Width="100" Height="32" Grid.Row="2" Margin="160, 0, 0, 0" Click="AddPatronButton_Click"/>
         <Button x:Name="BookListButton" Content="Book List" Width="100" Height="24" VerticalAlignment="Bottom" HorizontalAlignment="Left" Margin="20, 0" IsEnabled="False" Click="BookListButton_Click"/>
         <Button x:Name="PatronListButton" Content="Patron List" Width="100" Height="24" Margin="140, 0" HorizontalAlignment="Left" VerticalAlignment="Bottom" Click="PatronListButton_Click"/>

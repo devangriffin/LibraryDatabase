@@ -28,7 +28,6 @@ namespace LibraryDatabase
     /// </summary>
     public partial class MainWindow : Window
     {
-        private List<BookTitle> BookList;
         // private List<BookTitle> BookList;
         // private List<Patron> PatronList;
         /// <summary>
@@ -50,7 +49,7 @@ namespace LibraryDatabase
         public MainWindow()
         {
             InitializeComponent();
-
+            CheckoutButton.IsEnabled = false;
             SetItemSources();
         }
 
@@ -92,18 +91,21 @@ namespace LibraryDatabase
         {
             DisableOtherViews(PatronListView, PatronListButton);
             SetItemSources();
+            CheckoutButton.IsEnabled = false;
         }
 
         private void BookListButton_Click(object sender, RoutedEventArgs e)
         {
             DisableOtherViews(LibraryListView, BookListButton);
             SetItemSources();
+            CheckoutButton.IsEnabled = false;
         }
 
         private void GenreCountButton_Click(object sender, RoutedEventArgs e)
         {
             DisableOtherViews(GenreCountListView, GenreCountButton);
             SetItemSources();
+            CheckoutButton.IsEnabled = false;
         }
 
         private void DisableOtherViews(ListView listView, Button button)
@@ -527,10 +529,10 @@ namespace LibraryDatabase
         }
 
         /// <summary>
-        /// formats the book list
+        /// Gets an author name based on their AuthorID
         /// </summary>
-        /// <param name="books"></param>
-        /// <returns></returns>
+        /// <param name="id">the AuthorID of the author</param>
+        /// <returns>The authors name</returns>
         private string GetAuthor(int id)
         {
             string name = "";
@@ -567,7 +569,12 @@ namespace LibraryDatabase
              
              return name;
          }
-             
+        
+
+        /// <summary>
+        /// gets a list of all the patrons
+        /// </summary>
+        /// <returns>a list containing the patrons</returns>
         private List<Patron> GetPatronList()
         {
             List<Patron> list = new List<Patron>();
@@ -606,6 +613,10 @@ namespace LibraryDatabase
             return list;
         }
 
+        /// <summary>
+        /// gets the genre count
+        /// </summary>
+        /// <returns></returns>
         private List<KeyValuePair<string, int>> GetGenreCounts()
         {
             List<KeyValuePair<string, int>> list = new List<KeyValuePair<string, int>>();
@@ -731,5 +742,29 @@ namespace LibraryDatabase
         #region PatronListView
 
         #endregion
+
+        private void CheckoutButton_Click(object sender, RoutedEventArgs e)
+        {
+            CheckoutButton.IsEnabled = false;
+            if(LibraryListView.SelectedItem is BookTitle)
+            {
+                AddAuthor NewAuthorWindow = new AddAuthor((BookTitle)LibraryListView.SelectedItem, this);
+                NewAuthorWindow.Show();
+            }
+   
+            IsEnabled = false;
+        }
+
+        private void LibraryListView_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if(LibraryListView.SelectedItem != null && BookListButton.IsEnabled == false)
+            {
+                CheckoutButton.IsEnabled = true;
+            }
+            else
+            {
+                CheckoutButton.IsEnabled = false;
+            }
+        }
     }
 }
